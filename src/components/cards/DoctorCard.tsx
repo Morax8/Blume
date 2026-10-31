@@ -7,6 +7,7 @@
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Button } from '../common/Button';
 import { Card } from '../common/Card';
 import { BorderRadius, Colors, FontSize, Spacing } from '../../utils/constants';
 import type { Doctor } from '../../types/user';
@@ -23,7 +24,7 @@ export const DoctorCard: React.FC<DoctorCardProps> = ({ doctor, onPress }) => (
         <Image source={{ uri: doctor.avatarUrl }} style={styles.avatar} />
       ) : (
         <View style={[styles.avatar, styles.avatarPlaceholder]}>
-          <Ionicons name="person" size={24} color={Colors.white} />
+          <Ionicons name="person" size={24} color={Colors.textMeta} />
         </View>
       )}
 
@@ -44,7 +45,7 @@ export const DoctorCard: React.FC<DoctorCardProps> = ({ doctor, onPress }) => (
       <View style={styles.meta}>
         {typeof doctor.rating === 'number' ? (
           <View style={styles.ratingRow}>
-            <Ionicons name="star" size={14} color={Colors.warning} />
+            <Ionicons name="star" size={14} color={Colors.textMeta} />
             <Text style={styles.rating}>{doctor.rating.toFixed(1)}</Text>
           </View>
         ) : null}
@@ -52,13 +53,26 @@ export const DoctorCard: React.FC<DoctorCardProps> = ({ doctor, onPress }) => (
           <View
             style={[
               styles.statusDot,
-              { backgroundColor: doctor.isOnline ? Colors.success : Colors.textSecondary },
+              {
+                backgroundColor: doctor.isOnline
+                  ? Colors.dotOnline
+                  : Colors.dotOffline,
+              },
             ]}
           />
           <Text style={styles.statusText}>{doctor.isOnline ? 'Online' : 'Offline'}</Text>
         </View>
       </View>
     </View>
+
+    {onPress ? (
+      <Button
+        title="Book Consultation"
+        size="pill"
+        onPress={() => onPress(doctor)}
+        style={styles.bookButton}
+      />
+    ) : null}
   </Card>
 );
 
@@ -71,12 +85,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatar: {
-    width: 52,
-    height: 52,
-    borderRadius: BorderRadius.pill,
+    width: 64,
+    height: 64,
+    borderRadius: 16,
   },
   avatarPlaceholder: {
-    backgroundColor: Colors.accent,
+    backgroundColor: Colors.surfaceMuted,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -85,18 +99,18 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.md,
   },
   name: {
-    fontSize: FontSize.md,
-    fontWeight: '700',
+    fontSize: 20,
+    fontWeight: '600',
     color: Colors.text,
   },
   specialization: {
-    fontSize: FontSize.sm,
-    color: Colors.primary,
+    fontSize: FontSize.xs,
+    color: Colors.textBody,
     marginTop: 2,
   },
   hospital: {
     fontSize: FontSize.xs,
-    color: Colors.textSecondary,
+    color: Colors.textMeta,
     marginTop: 2,
   },
   meta: {
@@ -107,7 +121,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   rating: {
-    fontSize: FontSize.sm,
+    fontSize: 11,
     fontWeight: '600',
     color: Colors.text,
     marginLeft: 4,
@@ -124,7 +138,12 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   statusText: {
-    fontSize: FontSize.xs,
-    color: Colors.textSecondary,
+    fontSize: 11,
+    color: Colors.textMeta,
+  },
+  bookButton: {
+    height: 40,
+    minHeight: 40,
+    marginTop: Spacing.md,
   },
 });

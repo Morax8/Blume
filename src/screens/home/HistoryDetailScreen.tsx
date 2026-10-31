@@ -8,18 +8,19 @@
 import React, { useEffect, useState } from 'react';
 import {
   Image,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button } from '../../components/common/Button';
 import { Card } from '../../components/common/Card';
-import { Header } from '../../components/common/Header';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { detectionService } from '../../services/detectionService';
-import { Colors, FontSize, Spacing } from '../../utils/constants';
+import { Colors, FontSize, Spacing, BorderRadius } from '../../utils/constants';
 import { formatDate, formatConfidence } from '../../utils/formatters';
 import type { DetectionResult } from '../../types/detection';
 import type { HomeStackParamList } from '../../types/navigation';
@@ -61,75 +62,88 @@ export const HistoryDetailScreen: React.FC<Props> = ({ route, navigation }) => {
     };
   }, [detectionId]);
 
-  if (loading) {
-    return (
-      <View style={styles.flex}>
-        <Header title="Detail Deteksi" showBack onBack={() => navigation.goBack()} />
-        <LoadingSpinner fullScreen={false} />
+  // Shell design system: layar hijau + judul/back + sheet putih.
+  const renderShell = (content: React.ReactNode): React.JSX.Element => (
+    <View style={styles.flex}>
+      <Pressable
+        onPress={() => navigation.goBack()}
+        hitSlop={8}
+        style={styles.backButton}>
+        <Ionicons name="chevron-back" size={24} color={Colors.text} />
+      </Pressable>
+      <View style={styles.titleWrap}>
+        <Text style={styles.title}>Detail Deteksi</Text>
       </View>
-    );
+      <View style={styles.sheet}>{content}</View>
+    </View>
+  );
+
+  if (loading) {
+    return renderShell(<LoadingSpinner fullScreen={false} />);
   }
 
   if (error || !detail) {
-    return (
-      <View style={styles.flex}>
-        <Header title="Detail Deteksi" showBack onBack={() => navigation.goBack()} />
-        <View style={styles.errorWrap}>
-          <Text style={styles.errorText}>{error ?? 'Data tidak ditemukan.'}</Text>
-          <Button title="Kembali" onPress={() => navigation.goBack()} />
-        </View>
-      </View>
+    return renderShell(
+      <View style={styles.errorWrap}>
+        <Text style={styles.errorText}>{error ?? 'Data tidak ditemukan.'}</Text>
+        <Button title="Kembali" onPress={() => navigation.goBack()} />
+      </View>,
     );
   }
 
-  return (
-    <View style={styles.flex}>
-      <Header title="Detail Deteksi" showBack onBack={() => navigation.goBack()} />
-      <ScrollView contentContainerStyle={styles.container}>
-        <Image source={{ uri: detail.imageUrl }} style={styles.image} />
+  return renderShell(
+    <ScrollView contentContainerStyle={styles.container}>
+      <Image source={{ uri: detail.imageUrl }} style={styles.image} />
 
-        <View style={styles.headerRow}>
-          <View style={styles.titleWrap}>
-            <Text style={styles.diseaseName}>{detail.diseaseName}</Text>
-            <Text style={styles.date}>{formatDate(detail.createdAt)}</Text>
-          </View>
-          <View
-            style={[
-              styles.badge,
-              { backgroundColor: detail.isHealthy ? Colors.successLight : Colors.warningLight },
-            ]}>
-            <Text
-              style={[
-                styles.badgeText,
-                { color: detail.isHealthy ? Colors.success : Colors.warning },
-              ]}>
-              {detail.isHealthy ? 'Sehat' : formatConfidence(detail.confidence)}
-            </Text>
-          </View>
+      <View style={styles.headerRow}>
+        <View style={styles.titleWrapInner}>
+          <Text style={styles.diseaseName}>{detail.diseaseName}</Text>
+          <Text style={styles.date}>{formatDate(detail.createdAt)}</Text>
         </View>
+        <View
+          style={[
+            styles.badge,
+            {
+              backgroundColor: detail.isHealthy
+                ? Colors.severityMildBg
+                : Colors.severityModerateBg,
+            },
+          ]}>
+          <Text
+            style={[
+              styles.badgeText,
+              {
+                color: detail.isHealthy
+                  ? Colors.severityMildText
+                  : Colors.severityModerateText,
+              },
+            ]}>
+            {detail.isHealthy ? 'Sehat' : formatConfidence(detail.confidence)}
+          </Text>
+        </View>
+      </View>
 
-        {detail.description ? (
-          <Card style={styles.section}>
-            <Text style={styles.sectionTitle}>Deskripsi</Text>
-            <Text style={styles.bodyText}>{detail.description}</Text>
-          </Card>
-        ) : null}
+      {detail.description ? (
+        <Card radius={32} style={styles.section}>
+          <Text style={styles.sectionTitle}>Deskripsi</Text>
+          <Text style={styles.bodyText}>{detail.description}</Text>
+        </Card>
+      ) : null}
 
-        {detail.recommendations && detail.recommendations.length > 0 ? (
-          <Card style={styles.section}>
-            <Text style={styles.sectionTitle}>Rekomendasi Penanganan</Text>
-            {detail.recommendations.map((rec, index) => (
-              <View key={index} style={styles.recommendationRow}>
-                <Text style={styles.bullet}>{'•'}</Text>
-                <Text style={styles.bodyText}>{rec}</Text>
-              </View>
-            ))}
-          </Card>
-        ) : null}
+      {detail.recommendations && detail.recommendations.length > 0 ? (
+        <Card radius={32} style={styles.section}>
+          <Text style={styles.sectionTitle}>Rekomendasi Penanganan</Text>
+          {detail.recommendations.map((rec, index) => (
+            <View key={index} style={styles.recommendationRow}>
+              <Text style={styles.bullet}>{'•'}</Text>
+              <Text style={styles.bodyText}>{rec}</Text>
+            </View>
+          ))}
+        </Card>
+      ) : null}
 
-        {/* TODO: tombol "Konsultasi ke Dokter" -> navigate ke ConsultationTab */}
-      </ScrollView>
-    </View>
+      {/* TODO: tombol "Konsultasi ke Dokter" -> navigate ke ConsultationTab */}
+    </ScrollView>,
   );
 };
 
@@ -138,15 +152,47 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
+  backButton: {
+    position: 'absolute',
+    left: 12,
+    top: 40,
+    width: 45,
+    height: 45,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 2,
+  },
+  titleWrap: {
+    position: 'absolute',
+    top: 45,
+    left: 64,
+    right: 31,
+    zIndex: 1,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '600',
+    letterSpacing: -0.5,
+    color: Colors.text,
+  },
+  sheet: {
+    flex: 1,
+    marginTop: 136,
+    backgroundColor: Colors.sheet,
+    borderTopLeftRadius: BorderRadius.sheet,
+    borderTopRightRadius: BorderRadius.sheet,
+    paddingHorizontal: 30,
+    paddingVertical: 24,
+  },
   container: {
-    padding: Spacing.md,
     paddingBottom: Spacing.xl,
+    flexGrow: 1,
   },
   image: {
     width: '100%',
     height: 220,
-    borderRadius: Spacing.md,
-    backgroundColor: Colors.surface,
+    borderRadius: BorderRadius.lg,
+    backgroundColor: Colors.surfaceMuted,
   },
   headerRow: {
     flexDirection: 'row',
@@ -154,7 +200,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginVertical: Spacing.md,
   },
-  titleWrap: {
+  titleWrapInner: {
     flex: 1,
     marginRight: Spacing.sm,
   },
@@ -164,18 +210,19 @@ const styles = StyleSheet.create({
     color: Colors.text,
   },
   date: {
-    fontSize: FontSize.xs,
-    color: Colors.textSecondary,
+    fontSize: 11,
+    fontWeight: '500',
+    color: Colors.textMeta,
     marginTop: 4,
   },
   badge: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.xs + 2,
-    borderRadius: Spacing.md,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: BorderRadius.pill,
   },
   badgeText: {
-    fontSize: FontSize.sm,
-    fontWeight: '700',
+    fontSize: 11,
+    fontWeight: '500',
   },
   section: {
     marginBottom: Spacing.md,
@@ -198,7 +245,7 @@ const styles = StyleSheet.create({
   },
   bullet: {
     fontSize: FontSize.md,
-    color: Colors.primary,
+    color: Colors.textLink,
     marginRight: Spacing.sm,
     lineHeight: 22,
   },

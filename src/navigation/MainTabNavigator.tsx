@@ -7,6 +7,7 @@
  */
 
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -82,10 +83,15 @@ export const MainTabNavigator: React.FC = () => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
       headerShown: false,
-      tabBarActiveTintColor: Colors.primary,
+      tabBarActiveTintColor: Colors.textLink,
       tabBarInactiveTintColor: Colors.textSecondary,
       tabBarLabelStyle: { fontSize: FontSize.xs, fontWeight: '600' },
-      tabBarStyle: { paddingTop: Spacing.xs },
+      tabBarStyle: {
+        paddingTop: Spacing.xs,
+        backgroundColor: Colors.surface,
+        borderTopWidth: StyleSheet.hairlineWidth,
+        borderTopColor: Colors.border,
+      },
       // eslint-disable-next-line react/no-unstable-nested-components
       tabBarIcon: ({ color, size }) => (
         <Ionicons name={TAB_ICONS[route.name]} size={size} color={color} />

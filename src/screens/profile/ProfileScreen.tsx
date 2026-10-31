@@ -19,7 +19,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button } from '../../components/common/Button';
 import { Card } from '../../components/common/Card';
 import { useAuthStore } from '../../store/useAuthStore';
-import { Colors, FontSize, Spacing } from '../../utils/constants';
+import { Colors, FontSize, Spacing, BorderRadius } from '../../utils/constants';
 import type { ProfileStackParamList } from '../../types/navigation';
 
 interface MenuItem {
@@ -50,15 +50,20 @@ export const ProfileScreen: React.FC<
   };
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{
-        paddingTop: insets.top + Spacing.md,
-        paddingBottom: insets.bottom + Spacing.xl,
-      }}>
-      {/* Kartu profil */}
-      <Card style={styles.profileCard}>
-        <View style={styles.profileRow}>
+    <View style={styles.container}>
+      {/* Judul di atas latar hijau */}
+      <View style={styles.titleWrap}>
+        <Text style={styles.title}>Profil</Text>
+      </View>
+
+      {/* Sheet putih: identitas + menu + logout */}
+      <ScrollView
+        style={styles.sheet}
+        contentContainerStyle={[
+          styles.sheetContent,
+          { paddingBottom: insets.bottom + Spacing.xl },
+        ]}>
+        <View style={styles.identity}>
           {user?.avatarUrl ? (
             <Image source={{ uri: user.avatarUrl }} style={styles.avatar} />
           ) : (
@@ -68,40 +73,36 @@ export const ProfileScreen: React.FC<
               </Text>
             </View>
           )}
-          <View style={styles.profileInfo}>
-            <Text style={styles.userName}>{user?.name ?? 'Sahabat Sehat'}</Text>
-            <Text style={styles.userEmail}>{user?.email ?? '-'}</Text>
-          </View>
+          <Text style={styles.userName}>{user?.name ?? 'Sahabat Sehat'}</Text>
+          <Text style={styles.userEmail}>{user?.email ?? '-'}</Text>
         </View>
-      </Card>
 
-      {/* Menu pengaturan */}
-      <Card style={styles.menuCard}>
-        {MENU_ITEMS.map((item, index) => (
-          <View key={item.label}>
-            <View style={styles.menuRow}>
-              <Ionicons name={item.icon} size={20} color={Colors.primary} />
-              <Text style={styles.menuLabel}>{item.label}</Text>
-              <Ionicons name="chevron-forward" size={16} color={Colors.textSecondary} />
+        <Card style={styles.menuCard}>
+          {MENU_ITEMS.map((item, index) => (
+            <View key={item.label}>
+              <View style={styles.menuRow}>
+                <Ionicons name={item.icon} size={20} color={Colors.primary} />
+                <Text style={styles.menuLabel}>{item.label}</Text>
+                <Ionicons name="chevron-forward" size={16} color={Colors.textSecondary} />
+              </View>
+              {index < MENU_ITEMS.length - 1 ? (
+                <View style={styles.divider} />
+              ) : null}
             </View>
-            {index < MENU_ITEMS.length - 1 ? (
-              <View style={styles.divider} />
-            ) : null}
-          </View>
-        ))}
-      </Card>
+          ))}
+        </Card>
 
-      {/* TODO: aktifkan navigasi tiap menu item saat screen-nya tersedia. */}
+        {/* TODO: aktifkan navigasi tiap menu item saat screen-nya tersedia. */}
 
-      <Button
-        title="Keluar"
-        variant="danger"
-        onPress={handleLogout}
-        style={styles.logoutButton}
-      />
+        <Button
+          title="Keluar"
+          variant="danger"
+          onPress={handleLogout}
+        />
 
-      <Text style={styles.versionText}>Blume v0.0.1</Text>
-    </ScrollView>
+        <Text style={styles.versionText}>Blume v0.0.1</Text>
+      </ScrollView>
+    </View>
   );
 };
 
@@ -110,13 +111,34 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
-  profileCard: {
-    marginHorizontal: Spacing.md,
-    marginBottom: Spacing.md,
+  titleWrap: {
+    position: 'absolute',
+    top: 45,
+    left: 31,
+    right: 31,
+    zIndex: 1,
   },
-  profileRow: {
-    flexDirection: 'row',
+  title: {
+    fontSize: 24,
+    fontWeight: '600',
+    letterSpacing: -0.5,
+    color: Colors.text,
+  },
+  sheet: {
+    flex: 1,
+    marginTop: 136,
+    backgroundColor: Colors.sheet,
+    borderTopLeftRadius: BorderRadius.sheet,
+    borderTopRightRadius: BorderRadius.sheet,
+  },
+  sheetContent: {
+    paddingHorizontal: 30,
+    paddingVertical: 24,
+    flexGrow: 1,
+  },
+  identity: {
     alignItems: 'center',
+    marginBottom: Spacing.lg,
   },
   avatar: {
     width: 64,
@@ -124,31 +146,27 @@ const styles = StyleSheet.create({
     borderRadius: 32,
   },
   avatarPlaceholder: {
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.surfaceMuted,
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarInitial: {
     fontSize: FontSize.xl,
     fontWeight: '800',
-    color: Colors.white,
-  },
-  profileInfo: {
-    flex: 1,
-    marginLeft: Spacing.md,
+    color: Colors.text,
   },
   userName: {
     fontSize: FontSize.lg,
     fontWeight: '800',
     color: Colors.text,
+    marginTop: Spacing.sm,
   },
   userEmail: {
     fontSize: FontSize.sm,
-    color: Colors.textSecondary,
+    color: Colors.textBody,
     marginTop: 2,
   },
   menuCard: {
-    marginHorizontal: Spacing.md,
     marginBottom: Spacing.lg,
     paddingVertical: Spacing.xs,
   },
@@ -165,10 +183,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: Colors.border,
-  },
-  logoutButton: {
-    marginHorizontal: Spacing.md,
+    backgroundColor: Colors.borderDivider,
   },
   versionText: {
     fontSize: FontSize.xs,

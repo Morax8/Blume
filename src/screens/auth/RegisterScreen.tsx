@@ -15,12 +15,13 @@ import {
   Text,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button } from '../../components/common/Button';
 import { Input } from '../../components/common/Input';
 import { authService } from '../../services/authService';
 import { useAuthStore } from '../../store/useAuthStore';
-import { Colors, FontSize, Spacing } from '../../utils/constants';
+import { BorderRadius, Colors, FontSize, Spacing } from '../../utils/constants';
 import type { AuthStackParamList } from '../../types/navigation';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Register'>;
@@ -33,6 +34,7 @@ interface FormErrors {
 
 export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   const login = useAuthStore((state) => state.login);
+  const insets = useSafeAreaInsets();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -81,54 +83,63 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       style={styles.flex}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView
-        contentContainerStyle={styles.container}
+        contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled">
-        <View style={styles.header}>
+        {/* Brand di atas latar hijau layar */}
+        <View style={[styles.hero, { paddingTop: insets.top + 42 }]}>
+          <Text style={styles.brandTitle}>Blume</Text>
+          <Text style={styles.brandTagline}>
+            Deteksi penyakit kulit lebih awal
+          </Text>
+        </View>
+
+        {/* Sheet putih berisi form, menumpuk latar hijau */}
+        <View style={styles.sheet}>
           <Text style={styles.title}>Buat Akun</Text>
           <Text style={styles.subtitle}>
             Daftar untuk mulai merawat kesehatan kulitmu
           </Text>
-        </View>
 
-        <Input
-          label="Nama Lengkap"
-          placeholder="Nama kamu"
-          autoCapitalize="words"
-          value={name}
-          error={errors.name}
-          onChangeText={setName}
-        />
-        <Input
-          label="Email"
-          placeholder="nama@email.com"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoComplete="email"
-          value={email}
-          error={errors.email}
-          onChangeText={setEmail}
-        />
-        <Input
-          label="Password"
-          placeholder="Minimal 6 karakter"
-          secureTextEntry
-          value={password}
-          error={errors.password}
-          onChangeText={setPassword}
-        />
+          <Input
+            label="Nama Lengkap"
+            placeholder="Nama kamu"
+            autoCapitalize="words"
+            value={name}
+            error={errors.name}
+            onChangeText={setName}
+          />
+          <Input
+            label="Email"
+            placeholder="nama@email.com"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoComplete="email"
+            value={email}
+            error={errors.email}
+            onChangeText={setEmail}
+          />
+          <Input
+            label="Password"
+            placeholder="Minimal 6 karakter"
+            secureTextEntry
+            value={password}
+            error={errors.password}
+            onChangeText={setPassword}
+          />
 
-        <Button
-          title="Daftar"
-          loading={loading}
-          onPress={handleRegister}
-          style={styles.submitButton}
-        />
+          <Button
+            title="Daftar"
+            loading={loading}
+            onPress={handleRegister}
+            style={styles.submitButton}
+          />
 
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Sudah punya akun? </Text>
-          <Pressable onPress={() => navigation.navigate('Login')} hitSlop={8}>
-            <Text style={styles.link}>Masuk</Text>
-          </Pressable>
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>Sudah punya akun? </Text>
+            <Pressable onPress={() => navigation.navigate('Login')} hitSlop={8}>
+              <Text style={styles.link}>Masuk</Text>
+            </Pressable>
+          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -140,13 +151,33 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
-  container: {
+  scrollContent: {
     flexGrow: 1,
-    justifyContent: 'center',
-    padding: Spacing.lg,
   },
-  header: {
-    marginBottom: Spacing.xl,
+  hero: {
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: Spacing.xl + Spacing.lg,
+  },
+  brandTitle: {
+    fontSize: FontSize.xxl,
+    fontWeight: '800',
+    color: Colors.textOnHero,
+  },
+  brandTagline: {
+    fontSize: FontSize.sm,
+    color: Colors.textOnHero,
+    marginTop: Spacing.xs,
+  },
+  sheet: {
+    flexGrow: 1,
+    minHeight: 677,
+    backgroundColor: Colors.sheet,
+    borderTopLeftRadius: BorderRadius.sheet,
+    borderTopRightRadius: BorderRadius.sheet,
+    marginTop: -BorderRadius.sheet,
+    paddingHorizontal: 30,
+    paddingTop: 110,
+    paddingBottom: Spacing.xl,
   },
   title: {
     fontSize: FontSize.xxl,
@@ -157,6 +188,7 @@ const styles = StyleSheet.create({
     fontSize: FontSize.md,
     color: Colors.textSecondary,
     marginTop: Spacing.xs + 2,
+    marginBottom: Spacing.xl,
   },
   submitButton: {
     marginTop: Spacing.sm,
@@ -173,6 +205,6 @@ const styles = StyleSheet.create({
   link: {
     fontSize: FontSize.sm,
     fontWeight: '700',
-    color: Colors.primary,
+    color: Colors.textLink,
   },
 });

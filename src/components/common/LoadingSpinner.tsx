@@ -17,7 +17,7 @@ interface LoadingSpinnerProps {
 
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   size = 'large',
-  color = Colors.primary,
+  color = Colors.textLink,
   fullScreen = false,
 }) => {
   const indicator = <ActivityIndicator size={size} color={color} />;

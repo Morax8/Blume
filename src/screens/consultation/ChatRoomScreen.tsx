@@ -21,11 +21,10 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Header } from '../../components/common/Header';
 import { MessageBubble } from '../../components/cards/MessageBubble';
 import { socketService } from '../../services/socketService';
 import { useAuthStore } from '../../store/useAuthStore';
-import { Colors, FontSize, Spacing } from '../../utils/constants';
+import { BorderRadius, Colors, FontSize, Spacing } from '../../utils/constants';
 import type { ChatMessage } from '../../types/user';
 import type { ConsultationStackParamList } from '../../types/navigation';
 
@@ -86,13 +85,22 @@ export const ChatRoomScreen: React.FC<Props> = ({ route, navigation }) => {
 
   return (
     <View style={styles.flex}>
-      <Header
-        title={doctorName ?? 'Chat Dokter'}
-        showBack
-        onBack={() => navigation.goBack()}
-      />
+      {/* Judul + back di atas latar hijau */}
+      <Pressable
+        onPress={() => navigation.goBack()}
+        hitSlop={8}
+        style={styles.backButton}>
+        <Ionicons name="chevron-back" size={24} color={Colors.text} />
+      </Pressable>
+      <View style={styles.titleWrap}>
+        <Text style={styles.title} numberOfLines={1}>
+          {doctorName ?? 'Chat Dokter'}
+        </Text>
+      </View>
+
+      {/* Sheet putih: pesan + input */}
       <KeyboardAvoidingView
-        style={styles.flex}
+        style={styles.sheet}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={insets.top + 48}>
         <FlatList
@@ -124,7 +132,7 @@ export const ChatRoomScreen: React.FC<Props> = ({ route, navigation }) => {
           <TextInput
             style={styles.input}
             placeholder="Tulis pesan…"
-            placeholderTextColor={Colors.textSecondary}
+            placeholderTextColor={Colors.textPlaceholder}
             value={input}
             onChangeText={setInput}
             multiline
@@ -133,7 +141,7 @@ export const ChatRoomScreen: React.FC<Props> = ({ route, navigation }) => {
             onPress={handleSend}
             disabled={!input.trim()}
             style={[styles.sendButton, !input.trim() && styles.sendDisabled]}>
-            <Ionicons name="send" size={18} color={Colors.white} />
+            <Ionicons name="send" size={18} color={Colors.textOnPrimary} />
           </Pressable>
         </View>
       </KeyboardAvoidingView>
@@ -145,6 +153,38 @@ const styles = StyleSheet.create({
   flex: {
     flex: 1,
     backgroundColor: Colors.background,
+  },
+  backButton: {
+    position: 'absolute',
+    left: 12,
+    top: 40,
+    width: 45,
+    height: 45,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 2,
+  },
+  titleWrap: {
+    position: 'absolute',
+    top: 45,
+    left: 64,
+    right: 31,
+    zIndex: 1,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '600',
+    letterSpacing: -0.5,
+    color: Colors.text,
+  },
+  sheet: {
+    flex: 1,
+    marginTop: 136,
+    backgroundColor: Colors.sheet,
+    borderTopLeftRadius: BorderRadius.sheet,
+    borderTopRightRadius: BorderRadius.sheet,
+    paddingHorizontal: 30,
+    paddingTop: 24,
   },
   listContent: {
     paddingVertical: Spacing.md,
@@ -164,11 +204,10 @@ const styles = StyleSheet.create({
   inputBar: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    paddingHorizontal: Spacing.md,
     paddingTop: Spacing.sm,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: Colors.border,
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.sheet,
   },
   input: {
     flex: 1,
@@ -176,10 +215,8 @@ const styles = StyleSheet.create({
     minHeight: 40,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm + 2,
-    borderRadius: Spacing.lg,
-    backgroundColor: Colors.surface,
-    borderWidth: 1,
-    borderColor: Colors.border,
+    borderRadius: BorderRadius.lg,
+    backgroundColor: Colors.surfaceMuted,
     fontSize: FontSize.sm,
     color: Colors.text,
     marginRight: Spacing.sm,

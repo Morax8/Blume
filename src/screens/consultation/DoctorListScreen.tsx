@@ -13,21 +13,18 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { DoctorCard } from '../../components/cards/DoctorCard';
 import { doctorService } from '../../services/doctorService';
-import { Colors, FontSize, Spacing } from '../../utils/constants';
+import { BorderRadius, Colors, FontSize, Spacing } from '../../utils/constants';
 import type { Doctor } from '../../types/user';
 import type { ConsultationStackParamList } from '../../types/navigation';
 
 type Props = NativeStackScreenProps<ConsultationStackParamList, 'DoctorList'>;
 
 export const DoctorListScreen: React.FC<Props> = ({ navigation }) => {
-  const insets = useSafeAreaInsets();
-
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -78,43 +75,49 @@ export const DoctorListScreen: React.FC<Props> = ({ navigation }) => {
   );
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + Spacing.sm }]}>
-      <Text style={styles.title}>Konsultasi Dokter</Text>
-
-      {/* Search */}
-      <View style={styles.searchRow}>
-        <Ionicons name="search" size={18} color={Colors.textSecondary} />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Cari nama atau spesialisasi…"
-          placeholderTextColor={Colors.textSecondary}
-          value={search}
-          onChangeText={setSearch}
-        />
+    <View style={styles.container}>
+      {/* Judul di atas latar hijau */}
+      <View style={styles.titleWrap}>
+        <Text style={styles.title}>Konsultasi Dokter</Text>
       </View>
 
-      {loading ? (
-        <LoadingSpinner />
-      ) : (
-        <FlatList
-          data={filtered}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          contentContainerStyle={styles.listContent}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-          }
-          ListEmptyComponent={
-            error ? (
-              <Text style={styles.errorText}>{error}</Text>
-            ) : (
-              <Text style={styles.emptyText}>
-                Tidak ada dokter yang cocok dengan pencarian.
-              </Text>
-            )
-          }
-        />
-      )}
+      {/* Sheet putih: search + daftar dokter */}
+      <View style={styles.sheet}>
+        {/* Search */}
+        <View style={styles.searchRow}>
+          <Ionicons name="search" size={18} color={Colors.textSecondary} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Cari nama atau spesialisasi…"
+            placeholderTextColor={Colors.textPlaceholder}
+            value={search}
+            onChangeText={setSearch}
+          />
+        </View>
+
+        {loading ? (
+          <LoadingSpinner />
+        ) : (
+          <FlatList
+            data={filtered}
+            keyExtractor={(item) => item.id}
+            renderItem={renderItem}
+            contentContainerStyle={styles.listContent}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+            }
+            ListEmptyComponent={
+              error ? (
+                <Text style={styles.errorText}>{error}</Text>
+              ) : (
+                <Text style={styles.emptyText}>
+                  Tidak ada dokter yang cocok dengan pencarian.
+                </Text>
+              )
+            }
+          />
+        )}
+      </View>
     </View>
   );
 };
@@ -124,24 +127,36 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
+  titleWrap: {
+    position: 'absolute',
+    top: 45,
+    left: 31,
+    right: 31,
+    zIndex: 1,
+  },
   title: {
-    fontSize: FontSize.xl,
-    fontWeight: '800',
+    fontSize: 24,
+    fontWeight: '600',
+    letterSpacing: -0.5,
     color: Colors.text,
-    paddingHorizontal: Spacing.md,
-    marginBottom: Spacing.md,
+  },
+  sheet: {
+    flex: 1,
+    marginTop: 136,
+    backgroundColor: Colors.sheet,
+    borderTopLeftRadius: BorderRadius.sheet,
+    borderTopRightRadius: BorderRadius.sheet,
+    paddingHorizontal: 30,
+    paddingVertical: 24,
   },
   searchRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: Spacing.md,
     marginBottom: Spacing.md,
     paddingHorizontal: Spacing.md,
     height: 44,
-    borderRadius: Spacing.md,
-    backgroundColor: Colors.surface,
-    borderWidth: 1,
-    borderColor: Colors.border,
+    borderRadius: BorderRadius.pill,
+    backgroundColor: Colors.offWhite,
   },
   searchInput: {
     flex: 1,
@@ -150,7 +165,6 @@ const styles = StyleSheet.create({
     color: Colors.text,
   },
   listContent: {
-    paddingHorizontal: Spacing.md,
     paddingBottom: Spacing.xl,
     flexGrow: 1,
   },

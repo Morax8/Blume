@@ -8,7 +8,7 @@ import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Card } from '../common/Card';
-import { BorderRadius, Colors, FontSize, Spacing } from '../../utils/constants';
+import { BorderRadius, Colors, Shadows, Spacing } from '../../utils/constants';
 import { formatChatTime, formatConfidence } from '../../utils/formatters';
 import type { DetectionHistoryItem } from '../../types/detection';
 
@@ -21,13 +21,16 @@ export const DetectionHistoryCard: React.FC<DetectionHistoryCardProps> = ({
   item,
   onPress,
 }) => (
-  <Card onPress={onPress ? () => onPress(item) : undefined} style={styles.card}>
+  <Card
+    onPress={onPress ? () => onPress(item) : undefined}
+    radius={32}
+    style={styles.card}>
     <View style={styles.row}>
       {item.imageUrl ? (
         <Image source={{ uri: item.imageUrl }} style={styles.thumb} />
       ) : (
         <View style={[styles.thumb, styles.thumbPlaceholder]}>
-          <Ionicons name="body-outline" size={22} color={Colors.white} />
+          <Ionicons name="body-outline" size={22} color={Colors.textMeta} />
         </View>
       )}
 
@@ -41,12 +44,20 @@ export const DetectionHistoryCard: React.FC<DetectionHistoryCardProps> = ({
       <View
         style={[
           styles.badge,
-          { backgroundColor: item.isHealthy ? Colors.successLight : Colors.warningLight },
+          {
+            backgroundColor: item.isHealthy
+              ? Colors.severityMildBg
+              : Colors.severityModerateBg,
+          },
         ]}>
         <Text
           style={[
             styles.badgeText,
-            { color: item.isHealthy ? Colors.success : Colors.warning },
+            {
+              color: item.isHealthy
+                ? Colors.severityMildText
+                : Colors.severityModerateText,
+            },
           ]}>
           {item.isHealthy ? 'Sehat' : `${formatConfidence(item.confidence)}`}
         </Text>
@@ -58,6 +69,7 @@ export const DetectionHistoryCard: React.FC<DetectionHistoryCardProps> = ({
 const styles = StyleSheet.create({
   card: {
     marginBottom: Spacing.md,
+    ...Shadows.soft,
   },
   row: {
     flexDirection: 'row',
@@ -69,7 +81,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
   },
   thumbPlaceholder: {
-    backgroundColor: Colors.accent,
+    backgroundColor: Colors.surfaceMuted,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -78,22 +90,23 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.md,
   },
   disease: {
-    fontSize: FontSize.md,
-    fontWeight: '700',
+    fontSize: 20,
+    fontWeight: '600',
     color: Colors.text,
   },
   time: {
-    fontSize: FontSize.xs,
-    color: Colors.textSecondary,
+    fontSize: 11,
+    fontWeight: '500',
+    color: Colors.textMeta,
     marginTop: 4,
   },
   badge: {
-    paddingHorizontal: Spacing.sm + 2,
-    paddingVertical: Spacing.xs + 2,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
     borderRadius: BorderRadius.pill,
   },
   badgeText: {
-    fontSize: FontSize.xs,
-    fontWeight: '700',
+    fontSize: 11,
+    fontWeight: '500',
   },
 });

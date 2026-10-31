@@ -12,7 +12,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -22,7 +21,7 @@ import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { DetectionHistoryCard } from '../../components/cards/DetectionHistoryCard';
 import { detectionService } from '../../services/detectionService';
 import { useAuthStore } from '../../store/useAuthStore';
-import { Colors, FontSize, Spacing } from '../../utils/constants';
+import { Colors, FontSize, Spacing, BorderRadius } from '../../utils/constants';
 import type { DetectionHistoryItem } from '../../types/detection';
 import type { HomeStackParamList, MainTabParamList } from '../../types/navigation';
 
@@ -37,7 +36,6 @@ type Props = CompositeScreenProps<
 
 export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const user = useAuthStore((state) => state.user);
-  const insets = useSafeAreaInsets();
 
   const [history, setHistory] = useState<DetectionHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -77,49 +75,47 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   );
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + Spacing.sm }]}>
-      {/* Sapaan */}
-      <View style={styles.header}>
-        <View style={styles.greetingRow}>
-          <View style={styles.greetingTextWrap}>
-            <Text style={styles.greeting}>Halo,</Text>
-            <Text style={styles.userName}>{user?.name ?? 'Sahabat Sehat'} 💙</Text>
-          </View>
-          <View style={styles.logoBadge}>
-            <Ionicons name="medkit-outline" size={24} color={Colors.white} />
-          </View>
+    <View style={styles.container}>
+      {/* Sapaan user di atas latar hijau, di atas sheet */}
+      <View style={styles.greetingRow}>
+        <Text style={styles.greeting} numberOfLines={1}>
+          Halo, {user?.name ?? 'Sahabat Sehat'} 💙
+        </Text>
+        <View style={styles.logoBadge}>
+          <Ionicons name="medkit-outline" size={24} color={Colors.primary} />
         </View>
+      </View>
 
+      {/* Sheet putih: CTA scan + daftar riwayat */}
+      <View style={styles.sheet}>
         <Button
           title="Scan Sekarang"
           onPress={() => navigation.navigate('ScanTab')}
-          style={styles.scanButton}
         />
+        <Text style={styles.sectionTitle}>Riwayat Deteksi</Text>
+
+        {loading ? (
+          <LoadingSpinner />
+        ) : (
+          <ScrollView
+            style={styles.list}
+            contentContainerStyle={styles.listContent}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+            }>
+            {error ? <Text style={styles.errorText}>{error}</Text> : null}
+            {!error && history.length === 0 ? (
+              <View style={styles.emptyState}>
+                <Ionicons name="camera-outline" size={40} color={Colors.textSecondary} />
+                <Text style={styles.emptyText}>
+                  Belum ada riwayat. Scan kulitmu pertama kali!
+                </Text>
+              </View>
+            ) : null}
+            {history.map((item) => renderItem({ item }))}
+          </ScrollView>
+        )}
       </View>
-
-      {/* Daftar riwayat */}
-      <Text style={styles.sectionTitle}>Riwayat Deteksi</Text>
-
-      {loading ? (
-        <LoadingSpinner />
-      ) : (
-        <ScrollView
-          contentContainerStyle={styles.listContent}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-          }>
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
-          {!error && history.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Ionicons name="camera-outline" size={40} color={Colors.textSecondary} />
-              <Text style={styles.emptyText}>
-                Belum ada riwayat. Scan kulitmu pertama kali!
-              </Text>
-            </View>
-          ) : null}
-          {history.map((item) => renderItem({ item }))}
-        </ScrollView>
-      )}
     </View>
   );
 };
@@ -129,49 +125,50 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
-  header: {
-    paddingHorizontal: Spacing.md,
-    paddingBottom: Spacing.md,
-  },
   greetingRow: {
+    position: 'absolute',
+    top: 85,
+    left: 24,
+    right: 24,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: Spacing.md,
-  },
-  greetingTextWrap: {
-    flex: 1,
+    zIndex: 1,
   },
   greeting: {
-    fontSize: FontSize.sm,
-    color: Colors.textSecondary,
-  },
-  userName: {
-    fontSize: FontSize.xl,
-    fontWeight: '800',
-    color: Colors.text,
-    marginTop: 2,
+    flex: 1,
+    fontSize: 24,
+    fontWeight: '700',
+    color: Colors.black,
+    marginRight: Spacing.sm,
   },
   logoBadge: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.sheet,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  scanButton: {
-    minHeight: 52,
+  sheet: {
+    flex: 1,
+    marginTop: 136,
+    backgroundColor: Colors.sheet,
+    borderTopLeftRadius: BorderRadius.sheet,
+    borderTopRightRadius: BorderRadius.sheet,
+    paddingHorizontal: 24,
+    paddingVertical: 50,
+    gap: 25,
   },
   sectionTitle: {
     fontSize: FontSize.lg,
     fontWeight: '700',
     color: Colors.text,
-    paddingHorizontal: Spacing.md,
-    marginBottom: Spacing.md,
+  },
+  list: {
+    flex: 1,
   },
   listContent: {
-    paddingHorizontal: Spacing.md,
     paddingBottom: Spacing.xl,
     flexGrow: 1,
   },

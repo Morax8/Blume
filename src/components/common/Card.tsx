@@ -13,22 +13,30 @@ import {
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
-import { BorderRadius, Colors, Spacing } from '../../utils/constants';
+import { Colors, Shadows, Spacing } from '../../utils/constants';
 
 interface CardProps {
   children: React.ReactNode;
   /** Jika diisi, card menjadi Pressable. */
   onPress?: () => void;
+  /** Radius sudut kustom (mis. 32 untuk section/history card). Default: 16. */
+  radius?: number;
   style?: StyleProp<ViewStyle>;
 }
 
-export const Card: React.FC<CardProps> = ({ children, onPress, style }) => {
+export const Card: React.FC<CardProps> = ({
+  children,
+  onPress,
+  radius = 16,
+  style,
+}) => {
   if (onPress) {
     return (
       <Pressable
         onPress={onPress}
         style={({ pressed }) => [
           styles.card,
+          { borderRadius: radius },
           pressed && styles.pressed,
           style,
         ]}>
@@ -36,23 +44,14 @@ export const Card: React.FC<CardProps> = ({ children, onPress, style }) => {
       </Pressable>
     );
   }
-  return <View style={[styles.card, style]}>{children}</View>;
+  return <View style={[styles.card, { borderRadius: radius }, style]}>{children}</View>;
 };
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.white,
-    borderRadius: BorderRadius.lg,
+    backgroundColor: Colors.surface,
     padding: Spacing.md,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    // Shadow iOS
-    shadowColor: Colors.black,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    // Shadow Android
-    elevation: 2,
+    ...Shadows.card,
   },
   pressed: {
     opacity: 0.85,

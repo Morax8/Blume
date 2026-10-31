@@ -1,6 +1,6 @@
 /**
- * Bubble pesan chat. Posisi kanan (warna primer) untuk pesan sendiri,
- * kiri (warna netral) untuk pesan lawan bicara.
+ * Bubble pesan chat. Posisi kanan (pink primer) untuk pesan sendiri,
+ * kiri (surface muted) untuk pesan lawan bicara.
  *
  * @format
  */
@@ -26,9 +26,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
       <Text style={[styles.text, isMine ? styles.textMine : styles.textTheirs]}>
         {message.content}
       </Text>
-      <Text style={[styles.time, isMine ? styles.timeMine : styles.timeTheirs]}>
-        {formatTime(message.createdAt)}
-      </Text>
+      <Text style={styles.time}>{formatTime(message.createdAt)}</Text>
     </View>
   </View>
 );
@@ -52,17 +50,15 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: BorderRadius.lg,
     borderTopRightRadius: BorderRadius.lg,
     borderBottomLeftRadius: BorderRadius.lg,
-    borderBottomRightRadius: BorderRadius.sm,
+    borderBottomRightRadius: BorderRadius.lg,
   },
   bubbleMine: {
     backgroundColor: Colors.primary,
-    borderBottomRightRadius: BorderRadius.lg,
-    borderBottomLeftRadius: BorderRadius.sm,
+    borderBottomRightRadius: 4,
   },
   bubbleTheirs: {
-    backgroundColor: Colors.surface,
-    borderWidth: 1,
-    borderColor: Colors.border,
+    backgroundColor: Colors.surfaceMuted,
+    borderBottomLeftRadius: 4,
   },
   text: {
     fontSize: FontSize.sm,
@@ -72,17 +68,12 @@ const styles = StyleSheet.create({
     color: Colors.textOnPrimary,
   },
   textTheirs: {
-    color: Colors.text,
+    color: Colors.textBody,
   },
   time: {
-    fontSize: 10,
+    fontSize: 11,
     marginTop: 2,
     alignSelf: 'flex-end',
-  },
-  timeMine: {
-    color: 'rgba(255, 255, 255, 0.7)',
-  },
-  timeTheirs: {
     color: Colors.textSecondary,
   },
 });
