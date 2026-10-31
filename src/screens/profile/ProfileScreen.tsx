@@ -69,7 +69,7 @@ export const ProfileScreen: React.FC<
             </View>
           )}
           <View style={styles.profileInfo}>
-            <Text style={styles.userName}>{user?.name ?? 'Sahabat Tanaman'}</Text>
+            <Text style={styles.userName}>{user?.name ?? 'Sahabat Sehat'}</Text>
             <Text style={styles.userEmail}>{user?.email ?? '-'}</Text>
           </View>
         </View>

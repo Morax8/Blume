@@ -83,10 +83,10 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.greetingRow}>
           <View style={styles.greetingTextWrap}>
             <Text style={styles.greeting}>Halo,</Text>
-            <Text style={styles.userName}>{user?.name ?? 'Sahabat Tanaman'} 🌿</Text>
+            <Text style={styles.userName}>{user?.name ?? 'Sahabat Sehat'} 💙</Text>
           </View>
           <View style={styles.logoBadge}>
-            <Ionicons name="leaf" size={24} color={Colors.white} />
+            <Ionicons name="medkit-outline" size={24} color={Colors.white} />
           </View>
         </View>
 
@@ -113,7 +113,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
             <View style={styles.emptyState}>
               <Ionicons name="camera-outline" size={40} color={Colors.textSecondary} />
               <Text style={styles.emptyText}>
-                Belum ada riwayat. Scan daun tanamanmu pertama kali!
+                Belum ada riwayat. Scan kulitmu pertama kali!
               </Text>
             </View>
           ) : null}

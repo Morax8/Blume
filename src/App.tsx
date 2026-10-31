@@ -1,5 +1,5 @@
 /**
- * Blume - aplikasi deteksi penyakit tanaman.
+ * Blume - aplikasi deteksi penyakit kulit.
  * Entry point (AppRegistry) ada di index.js;
  * komponen ini merender root navigator.
  *

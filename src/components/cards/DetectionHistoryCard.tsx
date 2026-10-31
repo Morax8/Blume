@@ -27,7 +27,7 @@ export const DetectionHistoryCard: React.FC<DetectionHistoryCardProps> = ({
         <Image source={{ uri: item.imageUrl }} style={styles.thumb} />
       ) : (
         <View style={[styles.thumb, styles.thumbPlaceholder]}>
-          <Ionicons name="leaf" size={22} color={Colors.white} />
+          <Ionicons name="body-outline" size={22} color={Colors.white} />
         </View>
       )}
 

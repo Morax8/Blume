@@ -14,7 +14,7 @@ export interface DetectionResult {
   diseaseName: string;
   /** Keyakinan model, 0..1 (mis. 0.93 = 93%). */
   confidence: number;
-  /** True jika tanaman terdeteksi sehat. */
+  /** True jika kulit terdeteksi sehat. */
   isHealthy: boolean;
   description?: string;
   recommendations?: string[];

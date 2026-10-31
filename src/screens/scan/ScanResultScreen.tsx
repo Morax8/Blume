@@ -66,7 +66,7 @@ export const ScanResultScreen: React.FC<Props> = ({ route, navigation }) => {
         <Header title="Hasil Scan" />
         <View style={styles.analyzingWrap}>
           <LoadingSpinner />
-          <Text style={styles.analyzingText}>Menganalisis daun tanamanmu…</Text>
+          <Text style={styles.analyzingText}>Menganalisis kulit…</Text>
         </View>
       </View>
     );

@@ -86,7 +86,7 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.header}>
           <Text style={styles.title}>Buat Akun</Text>
           <Text style={styles.subtitle}>
-            Daftar untuk mulai merawat tanamanmu
+            Daftar untuk mulai merawat kesehatan kulitmu
           </Text>
         </View>
 

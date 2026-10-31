@@ -1,5 +1,5 @@
 /**
- * Layar kamera untuk scan daun (react-native-vision-camera).
+ * Layar kamera untuk scan kulit (react-native-vision-camera).
  * Setelah foto diambil, navigate ke ScanResult membawa imageUri.
  *
  * Catatan native: vision-camera butuh konfigurasi izin kamera
@@ -60,7 +60,7 @@ export const CameraScanScreen: React.FC<Props> = ({ navigation }) => {
         <Ionicons name="camera-outline" size={48} color={Colors.textSecondary} />
         <Text style={styles.centeredTitle}>Izin Kamera Diperlukan</Text>
         <Text style={styles.centeredText}>
-          Blume memerlukan kamera untuk memindai daun tanamanmu.
+          Blume memerlukan kamera untuk memindai kulit.
         </Text>
         <Button
           title="Izinkan Kamera"
@@ -115,7 +115,7 @@ export const CameraScanScreen: React.FC<Props> = ({ navigation }) => {
 
       {/* Panduan area scan */}
       <View style={styles.guideBox} pointerEvents="none">
-        <Text style={styles.guideText}>Posisikan daun di dalam area</Text>
+        <Text style={styles.guideText}>Posisikan area kulit di dalam area</Text>
       </View>
 
       {/* Kontrol bawah */}

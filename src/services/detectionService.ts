@@ -1,5 +1,5 @@
 /**
- * Endpoint deteksi AI: upload foto daun, riwayat, dan detail hasil.
+ * Endpoint deteksi AI: upload foto kulit, riwayat, dan detail hasil.
  *
  * @format
  */

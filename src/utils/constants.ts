@@ -20,12 +20,12 @@ export const SOCKET_URL = 'http://10.0.2.2:3000';
 /** Timeout request HTTP (ms). */
 export const API_TIMEOUT = 15000;
 
-/** Palet warna tema Blume (nuansa hijau/botani). */
+/** Palet warna tema Blume (nuansa biru medis). */
 export const Colors = {
-  primary: '#2E7D32',
-  primaryDark: '#1B5E20',
-  primaryLight: '#E8F5E9',
-  accent: '#66BB6A',
+  primary: '#1976D2',
+  primaryDark: '#0D47A1',
+  primaryLight: '#E3F2FD',
+  accent: '#42A5F5',
   background: '#FFFFFF',
   surface: '#F6F8F6',
   text: '#1A1A1A',
