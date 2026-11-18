@@ -21,6 +21,8 @@ export type RootStackParamList = {
 export type AuthStackParamList = {
   Login: undefined;
   Register: undefined;
+  /** Verifikasi kode OTP 6 digit setelah register. */
+  Otp: { email: string };
 };
 
 /**

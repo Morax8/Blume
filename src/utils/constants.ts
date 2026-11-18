@@ -171,3 +171,9 @@ export const FontFamily = {
   bold: 'PlusJakartaSans-Bold',
   extraBold: 'PlusJakartaSans-ExtraBold',
 } as const;
+
+/**
+ * Aktifkan setelah backend punya endpoint POST /auth/verify-otp.
+ * Selama false, register langsung login otomatis.
+ */
+export const ENABLE_OTP = false;

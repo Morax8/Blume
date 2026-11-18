@@ -21,7 +21,14 @@ import { Button } from '../../components/common/Button';
 import { Input } from '../../components/common/Input';
 import { authService } from '../../services/authService';
 import { useAuthStore } from '../../store/useAuthStore';
-import { BorderRadius, Colors, FontFamily, FontSize, Spacing } from '../../utils/constants';
+import {
+  BorderRadius,
+  Colors,
+  ENABLE_OTP,
+  FontFamily,
+  FontSize,
+  Spacing,
+} from '../../utils/constants';
 import type { AuthStackParamList } from '../../types/navigation';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Register'>;
@@ -68,6 +75,11 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
         email: email.trim(),
         password,
       });
+      // Kalau OTP aktif, lanjut ke layar verifikasi email dulu.
+      if (ENABLE_OTP) {
+        navigation.navigate('Otp', { email: email.trim() });
+        return;
+      }
       // Registrasi sukses -> langsung masuk aplikasi.
       login(token, user);
     } catch {

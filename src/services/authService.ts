@@ -20,6 +20,12 @@ export const authService = {
     return data;
   },
 
+  /** POST /auth/verify-otp -> { token, user } */
+  async verifyOtp(payload: { email: string; code: string }): Promise<AuthResponse> {
+    const { data } = await api.post<AuthResponse>('/auth/verify-otp', payload);
+    return data;
+  },
+
   /** GET /auth/profile -> data user yang sedang login */
   async getProfile(): Promise<User> {
     const { data } = await api.get<User>('/auth/profile');
