@@ -1,0 +1,6 @@
+<resources>
+
+    <!-- Warna background splash (poor-man's splash via windowBackground). -->
+    <color name="splash_background">#A8DB95</color>
+
+</resources>
