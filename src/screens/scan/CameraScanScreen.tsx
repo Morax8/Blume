@@ -13,6 +13,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { launchImageLibrary } from 'react-native-image-picker';
 import {
   Camera,
   useCameraDevice,
@@ -51,6 +52,20 @@ export const CameraScanScreen: React.FC<Props> = ({ navigation }) => {
     } finally {
       setCapturing(false);
     }
+  };
+
+  // Ambil foto dari galeri (Photo Picker Android 13+), lalu lanjut ke ScanResult.
+  const handlePickFromGallery = async (): Promise<void> => {
+    const result = await launchImageLibrary({
+      mediaType: 'photo',
+      quality: 0.9,
+      selectionLimit: 1,
+    });
+    const uri = result.assets?.[0]?.uri;
+    if (result.didCancel || !uri) {
+      return;
+    }
+    navigation.navigate('ScanResult', { imageUri: uri });
   };
 
   // Belum ada izin kamera.
@@ -121,12 +136,23 @@ export const CameraScanScreen: React.FC<Props> = ({ navigation }) => {
       {/* Kontrol bawah */}
       <View
         style={[styles.bottomBar, { paddingBottom: insets.bottom + Spacing.md }]}>
-        <Pressable
-          onPress={handleCapture}
-          disabled={capturing}
-          style={[styles.shutter, capturing && styles.shutterDisabled]}>
-          <View style={styles.shutterInner} />
-        </Pressable>
+        <View style={styles.bottomRow}>
+          {/* Tombol pilih foto dari galeri */}
+          <Pressable
+            onPress={handlePickFromGallery}
+            hitSlop={8}
+            style={styles.galleryButton}
+            accessibilityLabel="Pilih foto dari galeri">
+            <Ionicons name="images-outline" size={24} color={Colors.white} />
+          </Pressable>
+
+          <Pressable
+            onPress={handleCapture}
+            disabled={capturing}
+            style={[styles.shutter, capturing && styles.shutterDisabled]}>
+            <View style={styles.shutterInner} />
+          </Pressable>
+        </View>
       </View>
     </View>
   );
@@ -199,6 +225,20 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: 'center',
+  },
+  bottomRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xl,
+  },
+  galleryButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   shutter: {
     width: 72,
