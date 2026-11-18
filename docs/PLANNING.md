@@ -111,12 +111,17 @@ Blume/
 
 ## FASE 5 — Wiring frontend ke backend
 
+> **Status: kode SELESAI** (commit `be5e05f`). Semua service sudah memanggil endpoint asli,
+> `chatService.ts` + `apiError.ts` baru, `ChatRoomScreen` pakai `roomId` asli dari backend,
+> `HomeScreen` refresh via `useFocusEffect`, icon `Ionicons.ttf` sudah masuk APK.
+> Item 72–74 menunggu Fase 4 (butuh URL publik), item 75–76 menunggu tes manual di emulator.
+
 72. [ ] **`API_BASE_URL`** → `https://<ip>.sslip.io/api`
 73. [ ] **`SOCKET_URL`** → `https://<ip>.sslip.io`
 74. [ ] **Test login dari emulator** — `10.0.2.2` hanya untuk localhost, pakai URL publik
 75. [ ] **Test scan** — upload foto → `diseaseName` + `confidence` + `description` + `recommendations`
 76. [ ] **Test chat** — 2 client, pesan realtime
-77. [ ] **Loading & error state** — di `ScanResultScreen` dan `ChatRoom`
+77. [x] **Loading & error state** — di `ScanResultScreen` dan `ChatRoom`, plus `utils/apiError.ts` untuk pesan error spesifik (detail backend, 401, timeout, network)
 
 ## FASE 6 — Testing & dokumentasi
 
