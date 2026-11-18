@@ -4,21 +4,25 @@
  * @format
  */
 
+import {
+  API_BASE_URL as ENV_API_BASE_URL,
+  SOCKET_URL as ENV_SOCKET_URL,
+  API_TIMEOUT as ENV_API_TIMEOUT,
+} from '@env';
+
 /**
- * Base URL backend API.
+ * Base URL backend API — baca dari .env (react-native-dotenv).
  * - Emulator Android: 10.0.2.2 = localhost mesin host
  * - Simulator iOS: bisa langsung pakai http://localhost:3000
  * - Device fisik: pakai IP LAN komputer (mis. http://192.168.1.5:3000)
- *
- * TODO: pindahkan ke env / config build variant saat backend siap.
  */
-export const API_BASE_URL = 'http://10.0.2.2:3000/api';
+export const API_BASE_URL = ENV_API_BASE_URL || 'http://10.0.2.2:3000/api';
 
 /** URL server Socket.io (tanpa suffix /api). */
-export const SOCKET_URL = 'http://10.0.2.2:3000';
+export const SOCKET_URL = ENV_SOCKET_URL || 'http://10.0.2.2:3000';
 
-/** Timeout request HTTP (ms). */
-export const API_TIMEOUT = 15000;
+/** Timeout request HTTP (ms) — 30s untuk upload + inference server. */
+export const API_TIMEOUT = Number(ENV_API_TIMEOUT) || 30000;
 
 /**
  * Palet warna tema Blume — nilai resmi dari Figma design system (file: Blume).
