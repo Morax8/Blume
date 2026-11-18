@@ -76,20 +76,23 @@ Blume/
 43. [x] **Kontrak API dibaca dari RN** — 13 endpoint, tipe `User`/`Doctor`/`DetectionResult`/`ChatMessage` sudah dipetakan
 44. [x] **Setup project** — `services/api/`, FastAPI + uvicorn + SQLAlchemy, struktur `app/{routers,ml}/`
 45. [x] **Skema DB** — `User`, `Doctor`, `Detection`, `ChatRoom`, `Message` di `app/models.py`
-46. [ ] **Router auth** — `POST /auth/register`, `POST /auth/login`, `GET/PATCH /auth/profile`
+46. [x] **Router auth** — `POST /auth/register`, `POST /auth/login`, `GET/PATCH /auth/profile` di `app/routers/auth.py`
 47. [x] **Dependency `get_current_user`** — baca `Authorization: Bearer`
-48. [ ] **`GET /auth/profile` + `PATCH /auth/profile`** — match tipe `User`
-49. [ ] **Seed data** — 1 user demo + 5 dokter
-50. [ ] **`POST /detection`** — multipart `image`, jalankan inference, simpan, return `DetectionResult`
-51. [ ] **`GET /detection/history`** — return `DetectionHistoryItem[]`, urut terbaru
-52. [ ] **`GET /detection/:id` + `DELETE /detection/:id`**
-53. [ ] **`GET /doctors` + `GET /doctors/:id`** — match tipe `Doctor` (rating, isOnline, price)
-54. [ ] **Socket mount** — `socketio.ASGIApp` di path `/socket.io`
-55. [ ] **Handshake auth** — verifikasi JWT dari `auth.token` yang dikirim `socketService`
-56. [ ] **Event `joinRoom` / `leaveRoom`** — socket.io room per `roomId`
-57. [ ] **Event `sendMessage` → `receiveMessage`** — simpan ke DB, broadcast dengan `id`/`createdAt`/`senderId`
-58. [ ] **`GET /chat/:roomId/messages`** — history chat saat buka room
-59. [ ] **`GET /health`** — healthcheck untuk monitoring
+48. [x] **`GET /auth/profile` + `PATCH /auth/profile`** — match tipe `User`
+49. [x] **Seed data** — 1 user demo (`demo@blume.id` / `demo1234`) + 5 dokter, idempotent
+50. [x] **`POST /detection`** — multipart `image`, inference, simpan file, return `DetectionResult`
+51. [x] **`GET /detection/history`** — `DetectionHistoryItem[]` dengan field `scannedAt`, urut terbaru
+52. [x] **`GET /detection/:id` + `DELETE /detection/:id`** — cek kepemilikan, hapus file gambar
+53. [x] **`GET /doctors` + `GET /doctors/:id`** — `DoctorOut` (rating, isOnline, price)
+54. [x] **Socket mount** — `socketio.ASGIApp(sio, other_asgi_app=fastapi_app, socketio_path="socket.io")`
+55. [x] **Handshake auth** — verifikasi JWT dari `auth.token` di `app/sockets.py`
+56. [x] **Event `joinRoom` / `leaveRoom`** — socket.io room per `roomId`
+57. [x] **Event `sendMessage` → `receiveMessage`** — simpan ke DB, broadcast `id`/`createdAt`/`senderId`
+58. [x] **`GET /chat/:roomId/messages`** — history chat, `isMine` per pesan
+59. [x] **`GET /health`** — `modelMode`, `modelLoaded`, `numClasses`, `database`
+60. [x] **`requirements.txt` + `requirements-ml.txt` + README** — demo vs real mode
+61. [x] **Verifikasi mode real** — `load_state_dict(strict=True)` lolos, 115.071.606 parameter, latensi CPU 170–342 ms/gambar
+62. [x] **Smoke test otomatis** — `services/api/scripts/smoke_test.py`, 41 assert lolos (13 endpoint + static `/uploads` + socket)
 
 ## FASE 4 — Deploy (Oracle)
 
@@ -156,3 +159,5 @@ Blume/
 - **`best_skindex_v5_320.pt`** nama file menyebut v5 tapi arsitekturnya v3 — jangan tertukar
 - **Model 460 MB tidak masuk git** → simpan sebagai GitHub Release asset atau ambil dari Kaggle
 - **Metro lock folder** saat restrukturisasi repo → matikan Metro dulu sebelum `git mv` folder besar di Windows
+- **Latensi inference CPU terukur** — 170–342 ms/gambar (rata-rata **229 ms**), load model **7 s**. Jauh lebih cepat dari perkiraan awal 2–5 s, jadi inference server-side praktis gratis waktunya
+- **Parameter model** — 115.071.606 parameter (+1.538 buffer = 115.073.144 tensor di checkpoint). Kalau nulis di laporan, sebut yang mana
