@@ -1,6 +1,33 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- ── Jaringan ─────────────────────────────────────────────────── -->
+    <!-- API backend (axios) + Socket.io chat -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- ── Kamera ───────────────────────────────────────────────────── -->
+    <!-- Dipakai react-native-vision-camera di CameraScanScreen.
+         Runtime request-nya sudah di-handle useCameraPermission(). -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- ── Galeri ───────────────────────────────────────────────────── -->
+    <!-- Android 13+ (API 33): READ_MEDIA_IMAGES
+         Android 12 ke bawah  : READ_EXTERNAL_STORAGE (dibatasi maxSdkVersion) -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
+    <!-- Catatan: RECORD_AUDIO belum diperlukan karena app hanya takePhoto().
+         Tambahkan android.permission.RECORD_AUDIO kalau nanti merekam video. -->
+
+    <!-- Kamera tidak wajib supaya app tetap bisa di-install di device tanpa kamera -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
 
     <application
       android:name=".MainApplication"

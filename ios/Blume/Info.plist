@@ -34,8 +34,10 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<key>NSCameraUsageDescription</key>
+	<string>Blume memerlukan kamera untuk memindai kondisi kulit kamu.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Blume memerlukan akses galeri untuk memilih foto area kulit yang ingin dipindai.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
