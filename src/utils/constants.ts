@@ -162,3 +162,12 @@ export const BorderRadius = {
   sheet: 32,
   pill: 999,
 } as const;
+
+/** Keluarga font dari design system Figma (Plus Jakarta Sans). */
+export const FontFamily = {
+  regular: 'PlusJakartaSans-Regular',
+  medium: 'PlusJakartaSans-Medium',
+  semiBold: 'PlusJakartaSans-SemiBold',
+  bold: 'PlusJakartaSans-Bold',
+  extraBold: 'PlusJakartaSans-ExtraBold',
+} as const;

@@ -18,7 +18,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { DoctorCard } from '../../components/cards/DoctorCard';
 import { doctorService } from '../../services/doctorService';
-import { BorderRadius, Colors, FontSize, Spacing } from '../../utils/constants';
+import { BorderRadius, Colors, FontFamily, FontSize, Spacing } from '../../utils/constants';
 import type { Doctor } from '../../types/user';
 import type { ConsultationStackParamList } from '../../types/navigation';
 
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     letterSpacing: -0.5,
     color: Colors.text,
   },
@@ -162,6 +162,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: Spacing.sm,
     fontSize: FontSize.sm,
+    fontFamily: FontFamily.regular,
     color: Colors.text,
   },
   listContent: {
@@ -170,12 +171,14 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: FontSize.sm,
+    fontFamily: FontFamily.regular,
     color: Colors.error,
     textAlign: 'center',
     marginVertical: Spacing.xl,
   },
   emptyText: {
     fontSize: FontSize.sm,
+    fontFamily: FontFamily.regular,
     color: Colors.textSecondary,
     textAlign: 'center',
     marginVertical: Spacing.xl,

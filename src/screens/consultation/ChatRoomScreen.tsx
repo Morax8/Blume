@@ -24,7 +24,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MessageBubble } from '../../components/cards/MessageBubble';
 import { socketService } from '../../services/socketService';
 import { useAuthStore } from '../../store/useAuthStore';
-import { BorderRadius, Colors, FontSize, Spacing } from '../../utils/constants';
+import { BorderRadius, Colors, FontFamily, FontSize, Spacing } from '../../utils/constants';
 import type { ChatMessage } from '../../types/user';
 import type { ConsultationStackParamList } from '../../types/navigation';
 
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     letterSpacing: -0.5,
     color: Colors.text,
   },
@@ -198,6 +198,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: FontSize.sm,
+    fontFamily: FontFamily.regular,
     color: Colors.textSecondary,
     marginTop: Spacing.md,
   },
@@ -218,6 +219,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     backgroundColor: Colors.surfaceMuted,
     fontSize: FontSize.sm,
+    fontFamily: FontFamily.regular,
     color: Colors.text,
     marginRight: Spacing.sm,
   },

@@ -20,7 +20,7 @@ import {
 } from 'react-native-vision-camera';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button } from '../../components/common/Button';
-import { Colors, FontSize, Spacing } from '../../utils/constants';
+import { Colors, FontFamily, FontSize, Spacing } from '../../utils/constants';
 import type { ScanStackParamList } from '../../types/navigation';
 
 type Props = NativeStackScreenProps<ScanStackParamList, 'CameraScan'>;
@@ -146,12 +146,13 @@ const styles = StyleSheet.create({
   },
   centeredTitle: {
     fontSize: FontSize.lg,
-    fontWeight: '700',
+    fontFamily: FontFamily.bold,
     color: Colors.text,
     marginTop: Spacing.md,
   },
   centeredText: {
     fontSize: FontSize.sm,
+    fontFamily: FontFamily.regular,
     color: Colors.textSecondary,
     textAlign: 'center',
     marginTop: Spacing.sm,
@@ -185,6 +186,7 @@ const styles = StyleSheet.create({
   guideText: {
     color: Colors.white,
     fontSize: FontSize.sm,
+    fontFamily: FontFamily.regular,
     backgroundColor: Colors.overlay,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.xs + 2,

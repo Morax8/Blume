@@ -21,7 +21,7 @@ import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { DetectionHistoryCard } from '../../components/cards/DetectionHistoryCard';
 import { detectionService } from '../../services/detectionService';
 import { useAuthStore } from '../../store/useAuthStore';
-import { Colors, FontSize, Spacing, BorderRadius } from '../../utils/constants';
+import { Colors, FontFamily, FontSize, Spacing, BorderRadius } from '../../utils/constants';
 import type { DetectionHistoryItem } from '../../types/detection';
 import type { HomeStackParamList, MainTabParamList } from '../../types/navigation';
 
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
   greeting: {
     flex: 1,
     fontSize: 24,
-    fontWeight: '700',
+    fontFamily: FontFamily.bold,
     color: Colors.black,
     marginRight: Spacing.sm,
   },
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: FontSize.lg,
-    fontWeight: '700',
+    fontFamily: FontFamily.bold,
     color: Colors.text,
   },
   list: {
@@ -174,6 +174,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: FontSize.sm,
+    fontFamily: FontFamily.regular,
     color: Colors.error,
     textAlign: 'center',
     marginVertical: Spacing.lg,
@@ -184,6 +185,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: FontSize.sm,
+    fontFamily: FontFamily.regular,
     color: Colors.textSecondary,
     textAlign: 'center',
     marginTop: Spacing.md,

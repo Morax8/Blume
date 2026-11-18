@@ -20,7 +20,7 @@ import { Button } from '../../components/common/Button';
 import { Card } from '../../components/common/Card';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { detectionService } from '../../services/detectionService';
-import { Colors, FontSize, Spacing, BorderRadius } from '../../utils/constants';
+import { Colors, FontFamily, FontSize, Spacing, BorderRadius } from '../../utils/constants';
 import { formatDate, formatConfidence } from '../../utils/formatters';
 import type { DetectionResult } from '../../types/detection';
 import type { HomeStackParamList } from '../../types/navigation';
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     letterSpacing: -0.5,
     color: Colors.text,
   },
@@ -206,12 +206,12 @@ const styles = StyleSheet.create({
   },
   diseaseName: {
     fontSize: FontSize.xl,
-    fontWeight: '800',
+    fontFamily: FontFamily.extraBold,
     color: Colors.text,
   },
   date: {
     fontSize: 11,
-    fontWeight: '500',
+    fontFamily: FontFamily.medium,
     color: Colors.textMeta,
     marginTop: 4,
   },
@@ -222,19 +222,20 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     fontSize: 11,
-    fontWeight: '500',
+    fontFamily: FontFamily.medium,
   },
   section: {
     marginBottom: Spacing.md,
   },
   sectionTitle: {
     fontSize: FontSize.md,
-    fontWeight: '700',
+    fontFamily: FontFamily.bold,
     color: Colors.text,
     marginBottom: Spacing.sm,
   },
   bodyText: {
     fontSize: FontSize.sm,
+    fontFamily: FontFamily.regular,
     lineHeight: 22,
     color: Colors.text,
     flex: 1,
@@ -245,6 +246,7 @@ const styles = StyleSheet.create({
   },
   bullet: {
     fontSize: FontSize.md,
+    fontFamily: FontFamily.regular,
     color: Colors.textLink,
     marginRight: Spacing.sm,
     lineHeight: 22,
@@ -257,6 +259,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: FontSize.sm,
+    fontFamily: FontFamily.regular,
     color: Colors.error,
     marginBottom: Spacing.md,
     textAlign: 'center',

@@ -18,7 +18,7 @@ import {
   type TextStyle,
   type ViewStyle,
 } from 'react-native';
-import { BorderRadius, Colors, FontSize, Spacing } from '../../utils/constants';
+import { BorderRadius, Colors, FontFamily, FontSize, Spacing } from '../../utils/constants';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'danger';
 type ButtonSize = 'default' | 'large' | 'pill';
@@ -133,14 +133,14 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: FontSize.md,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   textLarge: {
     fontSize: FontSize.xl,
-    fontWeight: '800',
+    fontFamily: FontFamily.extraBold,
   },
   textPill: {
     fontSize: 13,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
 });

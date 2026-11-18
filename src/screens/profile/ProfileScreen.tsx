@@ -19,7 +19,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button } from '../../components/common/Button';
 import { Card } from '../../components/common/Card';
 import { useAuthStore } from '../../store/useAuthStore';
-import { Colors, FontSize, Spacing, BorderRadius } from '../../utils/constants';
+import { Colors, FontFamily, FontSize, Spacing, BorderRadius } from '../../utils/constants';
 import type { ProfileStackParamList } from '../../types/navigation';
 
 interface MenuItem {
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     letterSpacing: -0.5,
     color: Colors.text,
   },
@@ -152,17 +152,18 @@ const styles = StyleSheet.create({
   },
   avatarInitial: {
     fontSize: FontSize.xl,
-    fontWeight: '800',
+    fontFamily: FontFamily.extraBold,
     color: Colors.text,
   },
   userName: {
     fontSize: FontSize.lg,
-    fontWeight: '800',
+    fontFamily: FontFamily.extraBold,
     color: Colors.text,
     marginTop: Spacing.sm,
   },
   userEmail: {
     fontSize: FontSize.sm,
+    fontFamily: FontFamily.regular,
     color: Colors.textBody,
     marginTop: 2,
   },
@@ -178,6 +179,7 @@ const styles = StyleSheet.create({
   menuLabel: {
     flex: 1,
     fontSize: FontSize.md,
+    fontFamily: FontFamily.regular,
     color: Colors.text,
     marginLeft: Spacing.md,
   },
@@ -187,6 +189,7 @@ const styles = StyleSheet.create({
   },
   versionText: {
     fontSize: FontSize.xs,
+    fontFamily: FontFamily.regular,
     color: Colors.textSecondary,
     textAlign: 'center',
     marginTop: Spacing.lg,

@@ -15,7 +15,7 @@ import {
   type TextStyle,
   type ViewStyle,
 } from 'react-native';
-import { Colors, FontSize, Spacing } from '../../utils/constants';
+import { Colors, FontFamily, FontSize, Spacing } from '../../utils/constants';
 
 interface InputProps extends TextInputProps {
   /** Label di atas input (opsional). */
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: FontSize.sm,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     color: Colors.text,
     marginBottom: Spacing.xs + 2,
   },
@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.offWhite,
     paddingHorizontal: 15,
     fontSize: 18,
+    fontFamily: FontFamily.regular,
     color: Colors.textOnPrimary,
   },
   inputError: {
@@ -71,6 +72,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: FontSize.xs,
+    fontFamily: FontFamily.regular,
     color: Colors.error,
     marginTop: Spacing.xs + 2,
   },

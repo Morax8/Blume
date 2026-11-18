@@ -21,7 +21,7 @@ import { Button } from '../../components/common/Button';
 import { Input } from '../../components/common/Input';
 import { authService } from '../../services/authService';
 import { useAuthStore } from '../../store/useAuthStore';
-import { BorderRadius, Colors, FontSize, Spacing } from '../../utils/constants';
+import { BorderRadius, Colors, FontFamily, FontSize, Spacing } from '../../utils/constants';
 import type { AuthStackParamList } from '../../types/navigation';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Register'>;
@@ -160,11 +160,12 @@ const styles = StyleSheet.create({
   },
   brandTitle: {
     fontSize: FontSize.xxl,
-    fontWeight: '800',
+    fontFamily: FontFamily.extraBold,
     color: Colors.textOnHero,
   },
   brandTagline: {
     fontSize: FontSize.sm,
+    fontFamily: FontFamily.regular,
     color: Colors.textOnHero,
     marginTop: Spacing.xs,
   },
@@ -181,11 +182,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: FontSize.xxl,
-    fontWeight: '800',
+    fontFamily: FontFamily.extraBold,
     color: Colors.text,
   },
   subtitle: {
     fontSize: FontSize.md,
+    fontFamily: FontFamily.regular,
     color: Colors.textSecondary,
     marginTop: Spacing.xs + 2,
     marginBottom: Spacing.xl,
@@ -200,11 +202,12 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: FontSize.sm,
+    fontFamily: FontFamily.regular,
     color: Colors.textSecondary,
   },
   link: {
     fontSize: FontSize.sm,
-    fontWeight: '700',
+    fontFamily: FontFamily.bold,
     color: Colors.textLink,
   },
 });

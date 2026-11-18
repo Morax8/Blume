@@ -22,7 +22,7 @@ import { Button } from '../../components/common/Button';
 import { Card } from '../../components/common/Card';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { detectionService } from '../../services/detectionService';
-import { BorderRadius, Colors, FontSize, Spacing } from '../../utils/constants';
+import { BorderRadius, Colors, FontFamily, FontSize, Spacing } from '../../utils/constants';
 import { formatConfidence } from '../../utils/formatters';
 import type { DetectionResult } from '../../types/detection';
 import type { MainTabParamList, ScanStackParamList } from '../../types/navigation';
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     letterSpacing: -0.5,
     color: Colors.text,
   },
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   diseaseName: {
     flex: 1,
     fontSize: FontSize.xl,
-    fontWeight: '800',
+    fontFamily: FontFamily.extraBold,
     color: Colors.text,
     marginRight: Spacing.sm,
   },
@@ -236,11 +236,12 @@ const styles = StyleSheet.create({
   },
   confidenceRingText: {
     fontSize: 11,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     color: Colors.text,
   },
   bodyText: {
     fontSize: FontSize.sm,
+    fontFamily: FontFamily.regular,
     lineHeight: 22,
     color: Colors.text,
   },
@@ -249,7 +250,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: FontSize.md,
-    fontWeight: '700',
+    fontFamily: FontFamily.bold,
     color: Colors.text,
     marginBottom: Spacing.sm,
   },
@@ -259,6 +260,7 @@ const styles = StyleSheet.create({
   },
   bullet: {
     fontSize: FontSize.md,
+    fontFamily: FontFamily.regular,
     color: Colors.textLink,
     marginRight: Spacing.sm,
     lineHeight: 22,
@@ -277,6 +279,7 @@ const styles = StyleSheet.create({
   },
   analyzingText: {
     fontSize: FontSize.sm,
+    fontFamily: FontFamily.regular,
     color: Colors.textSecondary,
     marginTop: Spacing.md,
   },
@@ -288,6 +291,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: FontSize.sm,
+    fontFamily: FontFamily.regular,
     color: Colors.error,
     textAlign: 'center',
     marginBottom: Spacing.lg,

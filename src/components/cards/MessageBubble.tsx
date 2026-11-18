@@ -7,7 +7,13 @@
 
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { BorderRadius, Colors, FontSize, Spacing } from '../../utils/constants';
+import {
+  BorderRadius,
+  Colors,
+  FontFamily,
+  FontSize,
+  Spacing,
+} from '../../utils/constants';
 import { formatTime } from '../../utils/formatters';
 import type { ChatMessage } from '../../types/user';
 
@@ -62,6 +68,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: FontSize.sm,
+    fontFamily: FontFamily.regular,
     lineHeight: 20,
   },
   textMine: {
@@ -72,6 +79,7 @@ const styles = StyleSheet.create({
   },
   time: {
     fontSize: 11,
+    fontFamily: FontFamily.regular,
     marginTop: 2,
     alignSelf: 'flex-end',
     color: Colors.textSecondary,

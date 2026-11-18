@@ -9,7 +9,7 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Button } from '../common/Button';
 import { Card } from '../common/Card';
-import { BorderRadius, Colors, FontSize, Spacing } from '../../utils/constants';
+import { BorderRadius, Colors, FontFamily, FontSize, Spacing } from '../../utils/constants';
 import type { Doctor } from '../../types/user';
 
 interface DoctorCardProps {
@@ -100,16 +100,18 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 20,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     color: Colors.text,
   },
   specialization: {
     fontSize: FontSize.xs,
+    fontFamily: FontFamily.regular,
     color: Colors.textBody,
     marginTop: 2,
   },
   hospital: {
     fontSize: FontSize.xs,
+    fontFamily: FontFamily.regular,
     color: Colors.textMeta,
     marginTop: 2,
   },
@@ -122,7 +124,7 @@ const styles = StyleSheet.create({
   },
   rating: {
     fontSize: 11,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     color: Colors.text,
     marginLeft: 4,
   },
@@ -139,6 +141,7 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 11,
+    fontFamily: FontFamily.regular,
     color: Colors.textMeta,
   },
   bookButton: {

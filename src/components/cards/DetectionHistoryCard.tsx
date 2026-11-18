@@ -8,7 +8,7 @@ import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Card } from '../common/Card';
-import { BorderRadius, Colors, Shadows, Spacing } from '../../utils/constants';
+import { BorderRadius, Colors, FontFamily, Shadows, Spacing } from '../../utils/constants';
 import { formatChatTime, formatConfidence } from '../../utils/formatters';
 import type { DetectionHistoryItem } from '../../types/detection';
 
@@ -91,12 +91,12 @@ const styles = StyleSheet.create({
   },
   disease: {
     fontSize: 20,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     color: Colors.text,
   },
   time: {
     fontSize: 11,
-    fontWeight: '500',
+    fontFamily: FontFamily.medium,
     color: Colors.textMeta,
     marginTop: 4,
   },
@@ -107,6 +107,6 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     fontSize: 11,
-    fontWeight: '500',
+    fontFamily: FontFamily.medium,
   },
 });
