@@ -1,0 +1,61 @@
+{
+  "modelName": "SkindexHybrid v3",
+  "architecture": "ConvNeXt-Tiny + ViT-B/16 -> concat 1024-D -> MLP head",
+  "framework": "PyTorch",
+  "numClasses": 22,
+  "parameterCount": 115073144,
+  "inputSize": 320,
+  "resizeSize": 352,
+  "normalization": {
+    "mean": [
+      0.485,
+      0.456,
+      0.406
+    ],
+    "std": [
+      0.229,
+      0.224,
+      0.225
+    ]
+  },
+  "classOrder": [
+    "Acne",
+    "Actinic keratosis",
+    "Benign keratosis",
+    "Cacar Air",
+    "Cellulitis",
+    "Dermatofibroma",
+    "Dry",
+    "Eczema_Dermatitis_Group",
+    "Herpes Zoster",
+    "Impetigo",
+    "Jamur Kuku",
+    "Kutu Air",
+    "Larva Migrans",
+    "Melanocytic nevus",
+    "Melanoma",
+    "Normal",
+    "Oily",
+    "Psoriasis",
+    "Scabies",
+    "Squamous cell carcinoma",
+    "Tinea Ringworm Candidiasis",
+    "Vascular lesion"
+  ],
+  "healthyClasses": [
+    "Normal"
+  ],
+  "tta": {
+    "enabled": false,
+    "reason": "TTA 4-flip menghasilkan 89.46%, lebih rendah dari 89.57% tanpa TTA. Menonaktifkan TTA membuat inference ~4x lebih cepat tanpa kehilangan akurasi."
+  },
+  "metrics": {
+    "valAccuracy": 89.57,
+    "ttaAccuracy": 89.46,
+    "macroF1": 0.9,
+    "valSamples": 6433,
+    "trainSamples": 25729,
+    "datasetSize": 32162
+  },
+  "disclaimer": "Hasil deteksi bukan diagnosis medis. Selalu konsultasikan kondisi kulit ke dokter spesialis."
+}

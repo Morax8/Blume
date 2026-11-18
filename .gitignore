@@ -1,33 +1,21 @@
-# OSX
-#
-.DS_Store
+# ─────────────────────────────────────────────────────────────
+# Root .gitignore — Blume monorepo
+# (apps/mobile/.gitignore tetap ada untuk aturan khusus React Native)
+# ─────────────────────────────────────────────────────────────
 
-# Xcode
-#
-build/
-*.pbxuser
-!default.pbxuser
-*.mode1v3
-!default.mode1v3
-*.mode2v3
-!default.mode2v3
-*.perspectivev3
-!default.perspectivev3
-xcuserdata
-*.xccheckout
-*.moved-aside
-DerivedData
-*.hmap
-*.ipa
-*.xcuserstate
-**/.xcode.env.local
+# ── Node / React Native ──
+node_modules/
+npm-debug.log
+yarn-error.log
+.metro-health-check*
+coverage/
+*.jsbundle
 
-# Android/IntelliJ
-#
+# ── Android ──
 build/
-.idea
-.gradle
+.gradle/
 local.properties
+.idea/
 *.iml
 *.hprof
 .cxx/
@@ -35,45 +23,43 @@ local.properties
 !debug.keystore
 .kotlin/
 
-# node.js
-#
-node_modules/
-npm-debug.log
-yarn-error.log
+# ── iOS ──
+Pods/
+DerivedData/
+*.xcuserstate
+**/.xcode.env.local
 
-# fastlane
-#
-# It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
-# screenshots whenever they are needed.
-# For more information about the recommended setup visit:
-# https://docs.fastlane.tools/best-practices/source-control/
+# ── Python ──
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
-**/fastlane/report.xml
-**/fastlane/Preview.html
-**/fastlane/screenshots
-**/fastlane/test_output
-
-# Bundle artifact
-*.jsbundle
-
-# Ruby / CocoaPods
-**/Pods/
-/vendor/bundle/
-
-# Temporary files created by Metro to check the health of the file watcher
-.metro-health-check*
-
-# testing
-/coverage
-
-# Yarn
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-
-graphify-out/
-# Environment variables (rahasia lokal, jangan commit)
+# ── Environment (jangan commit rahasia) ──
 .env
+!.env.example
+
+# ── Backend runtime ──
+services/api/blume.db
+services/api/uploads/
+services/api/*.db
+services/api/*.sqlite3
+
+# ── Model & artefak besar ──
+ml/models/*.pt
+ml/models/*.onnx
+ml/models/*.pth
+*.onnx
+*.tflite
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Tooling ──
+graphify-out/

@@ -2,6 +2,24 @@
 
 > Satu list, urut per fase. `[x]` = selesai, `[ ]` = belum. Update file ini tiap ada keputusan baru.
 
+## Struktur repo (monorepo)
+
+Satu repo, satu link: `github.com/Morax8/Blume`
+
+```
+Blume/
+├── apps/mobile/          React Native app (Android + iOS)
+├── services/api/         Backend FastAPI + python-socketio
+├── ml/                   Notebook, generator artefak, model .pt
+│   ├── notebooks/
+│   ├── models/           (.pt 460 MB — gitignored, ambil dari Kaggle/Release)
+│   └── gen_artifacts.py  → menulis ke services/api/app/ml/artifacts/
+├── docs/                 Planning, laporan
+└── scripts/              Script bantu dev/deploy
+```
+
+**Aturan:** tidak pakai npm workspaces — `apps/mobile/node_modules` berdiri sendiri supaya Metro tidak rewel.
+
 ## FASE 0 — Keputusan stack (sudah dikunci)
 
 1. [x] **Backend = 1 service Python** (bukan Node + Python terpisah) — 12 dari 13 endpoint itu CRUD biasa, cuma 1 butuh model
@@ -32,34 +50,34 @@
 23. [x] **Permissions iOS** — NSCameraUsageDescription, NSPhotoLibraryUsageDescription, hapus NSLocation kosong
 24. [x] **Build env Android** — `local.properties`, ANDROID_HOME, NDK 27.1, SDK 37.1, Gradle 9.4.1
 25. [x] **Emulator** — Pixel_10_Pro_XL, partisi 12 GB, build + install + run verified
-26. [ ] **Font Plus Jakarta Sans** — install ke `android/app/src/main/assets/fonts/` + `react-native.config.js`
-27. [ ] **App icon & splash** — `assets/` masih kosong, masih icon default RN
-28. [ ] **Pindah `API_BASE_URL` / `SOCKET_URL` ke `.env`** — pakai `react-native-config`, jangan hardcode
-29. [ ] **Naikin `API_TIMEOUT`** — 15s → 30s (inference server 2–4s + upload)
+26. [x] **Font Plus Jakarta Sans** — 5 weight statis di `apps/mobile/android/app/src/main/assets/fonts/` + `react-native.config.js`
+27. [x] **App icon & splash** — `scripts/gen_icons.py`, mipmap mdpi–xxxhdpi, `windowBackground` hijau
+28. [x] **Pindah `API_BASE_URL` / `SOCKET_URL` ke `.env`** — `react-native-dotenv`, `.env.example` di-commit
+29. [x] **Naikin `API_TIMEOUT`** — 15s → 30s
 30. [ ] **Audit screen dari Figma yang belum** — Profile, Camera, Splash, Onboarding 1–4, Register, OTP, Prescription
-31. [ ] **Screen OTP** — ada di Figma (`13:781`), belum ada di RN
-32. [ ] **Image picker galeri** — permission sudah siap, library belum (`react-native-image-picker`)
+31. [x] **Screen OTP** — `OtpScreen.tsx` + `authService.verifyOtp` + flag `ENABLE_OTP` (default false)
+32. [x] **Image picker galeri** — `react-native-image-picker` di `CameraScanScreen`
 33. [ ] **JDK 24 → 17** — RN idealnya 17/21, sekarang 24 (risiko)
 
 ## FASE 2 — ML (model & artefak)
 
 34. [x] **Notebook v3** — PyTorch, ConvNeXt-Tiny + ViT-B/16, 22 kelas, 32.162 gambar, input 320×320
-35. [x] **Hasil training** — val acc **89.57%**, TTA 89%, macro F1 0.90
-36. [ ] **Download `best_skindex_v5_320.pt`** (~456 MB) dari output Kaggle
-37. [ ] **`ml/labels.py`** — 22 nama kelas + deskripsi Indonesia + rekomendasi per penyakit *(perlu validasi medis)*
-38. [ ] **`ml/model.py`** — copy `SkindexHybridModel` + `FlexibleViT` dari notebook v3
-39. [ ] **`ml/inference.py`** — preprocess 320×320, TTA 4-flip, softmax, top-5
-40. [ ] **Fallback mode** — kalau `.pt` tidak ada, output dummy deterministik supaya backend tetap bisa dites
-41. [ ] *(opsional)* **Export ONNX int8** — 456 MB → ~120 MB, hemat RAM & lebih cepat
+35. [x] **Hasil training** — val acc **89.57%**, macro F1 0.90. TTA 4-flip **89.46%** (lebih rendah → TTA dimatikan)
+36. [x] **Checkpoint `best_skindex_v5_320.pt`** — 460 MB, 115.073.144 parameter, di `ml/models/` (gitignored)
+37. [x] **`class_labels.json` + `disease_info.json` + `model_meta.json`** — 22 kelas, deskripsi/severity/rekomendasi Indonesia, preprocessing & metrics; generator `ml/gen_artifacts.py`
+38. [x] **Arsitektur model** — `services/api/app/ml/architecture.py` (`SkindexHybridModel` + `FlexibleViT`)
+39. [x] **Inference** — `services/api/app/ml/inference.py`, preprocess 320×320, softmax, top-5, TTA off
+40. [x] **Fallback mode** — kalau `.pt`/torch tidak ada, prediksi dummy deterministik (mode `demo`)
+41. [ ] *(opsional)* **Export ONNX int8** — 460 MB → ~115 MB, hemat RAM & lebih cepat
 42. [ ] *(ditunda)* **Model TFLite on-device** — MobileNetV3-Large 224 int8 ~6 MB, akurasi ~83–86%
 
 ## FASE 3 — Backend (FastAPI)
 
 43. [x] **Kontrak API dibaca dari RN** — 13 endpoint, tipe `User`/`Doctor`/`DetectionResult`/`ChatMessage` sudah dipetakan
-44. [ ] **Setup project** — FastAPI + uvicorn + SQLAlchemy, struktur `app/{routers,ml}/`
-45. [ ] **Skema DB** — `User`, `Doctor`, `Detection`, `Message`, `ChatRoom`
-46. [ ] **Auth** — JWT (PyJWT) + PBKDF2 hash; `POST /auth/login`, `POST /auth/register` → `{token, user}`
-47. [ ] **Dependency `get_current_user`** — baca `Authorization: Bearer`
+44. [x] **Setup project** — `services/api/`, FastAPI + uvicorn + SQLAlchemy, struktur `app/{routers,ml}/`
+45. [x] **Skema DB** — `User`, `Doctor`, `Detection`, `ChatRoom`, `Message` di `app/models.py`
+46. [ ] **Router auth** — `POST /auth/register`, `POST /auth/login`, `GET/PATCH /auth/profile`
+47. [x] **Dependency `get_current_user`** — baca `Authorization: Bearer`
 48. [ ] **`GET /auth/profile` + `PATCH /auth/profile`** — match tipe `User`
 49. [ ] **Seed data** — 1 user demo + 5 dokter
 50. [ ] **`POST /detection`** — multipart `image`, jalankan inference, simpan, return `DetectionResult`
@@ -118,13 +136,13 @@
 
 | Fase | Estimasi |
 |---|---|
-| 1. Frontend sisa | ~6 jam |
-| 2. ML artefak | ~2 jam (+ download model) |
-| 3. Backend | ~11 jam |
+| 1. Frontend sisa | ~2 jam |
+| 2. ML artefak | ✅ selesai |
+| 3. Backend | ~9 jam |
 | 4. Deploy Oracle | ~3 jam |
 | 5. Wiring | ~2 jam |
 | 6. Testing | ~3 jam |
-| **Total** | **~27 jam** (± 4–5 hari kerja) |
+| **Total** | **~19 jam** (± 3–4 hari kerja) |
 | 7. Offline (opsional) | +~1 hari |
 
 ## Catatan risiko
@@ -134,3 +152,7 @@
 - **Cold start tidak ada** di Oracle (beda dengan HF/Modal) — jadi lebih baik untuk demo
 - **ARM aarch64** — PyTorch, Pillow, numpy, psycopg2 semua punya wheel resmi; library niche mungkin perlu build from source
 - **Socket.io Python** kurang contoh dibanding Node — tapi cuma 3 event, tidak masalah
+- **Checkpoint disimpan dari CUDA** → `torch.load(..., map_location="cpu")` wajib, kalau lupa error di server tanpa GPU
+- **`best_skindex_v5_320.pt`** nama file menyebut v5 tapi arsitekturnya v3 — jangan tertukar
+- **Model 460 MB tidak masuk git** → simpan sebagai GitHub Release asset atau ambil dari Kaggle
+- **Metro lock folder** saat restrukturisasi repo → matikan Metro dulu sebelum `git mv` folder besar di Windows

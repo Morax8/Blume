@@ -1,97 +1,117 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Blume 🌿
 
-# Getting Started
+Aplikasi deteksi penyakit kulit berbasis React Native + FastAPI + model deep learning 22 kelas.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+**Repo ini monorepo**: aplikasi mobile, backend, dan artefak model ada di satu tempat.
 
-## Step 1: Start Metro
+## Struktur
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
-
-To start the Metro dev server, run the following command from the root of your React Native project:
-
-```sh
-# Using npm
-npm start
-
-# OR using Yarn
-yarn start
+```
+Blume/
+├── apps/mobile/          React Native app (Android + iOS)
+├── services/api/         Backend FastAPI + python-socketio
+├── ml/                   Notebook, generator artefak, checkpoint model
+├── docs/                 Planning & dokumentasi
+└── scripts/              Script bantu
 ```
 
-## Step 2: Build and run your app
+## Prasyarat
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+| Tool | Versi |
+|---|---|
+| Node.js | ≥ 22.11 |
+| JDK | 17 atau 21 (24 belum ideal untuk RN) |
+| Android SDK | platform 37, NDK 27.1 |
+| Python | ≥ 3.11 |
+| Git | terbaru |
 
-### Android
+## Quick start
 
-```sh
-# Using npm
-npm run android
+### 1. Mobile app
 
-# OR using Yarn
-yarn android
+```bash
+cd apps/mobile
+npm install
+cp .env.example .env        # isi API_BASE_URL & SOCKET_URL
+npm run android             # butuh emulator / HP tersambung
 ```
 
-### iOS
+### 2. Backend API
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
+```bash
+cd services/api
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env
+uvicorn app.main:app --reload --port 3000
 ```
 
-Then, and every time you update your native dependencies, run:
+Cek: <http://localhost:3000/health>
 
-```sh
-bundle exec pod install
+Backend punya **2 mode**:
+
+| Mode | Syarat | Perilaku |
+|---|---|---|
+| `demo` | tanpa `torch` / tanpa file `.pt` | prediksi dummy deterministik — alur tetap bisa dites |
+| `real` | `pip install -r requirements-ml.txt` + `.pt` ada | model v3 asli (89.57% val acc) |
+
+Install PyTorch CPU-only (hemat ~2 GB):
+
+```bash
+pip install -r requirements-ml.txt --index-url https://download.pytorch.org/whl/cpu
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+### 3. Model ML
 
-```sh
-# Using npm
-npm run ios
+Checkpoint **tidak di-commit** (460 MB). Ambil dari salah satu:
 
-# OR using Yarn
-yarn ios
+- Kaggle Dataset / output notebook → taruh di `ml/models/best_skindex_v5_320.pt`
+- GitHub Release asset repo ini → `wget` lalu taruh di path yang sama
+
+Regenerate metadata kelas (kalau deskripsi penyakit diubah):
+
+```bash
+python ml/gen_artifacts.py
+# output → services/api/app/ml/artifacts/
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+## API
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+Base URL: `http://<host>:3000/api` · Socket: `http://<host>:3000` (path `/socket.io`)
 
-## Step 3: Modify your app
+| Method | Endpoint | Auth |
+|---|---|---|
+| POST | `/auth/register` | — |
+| POST | `/auth/login` | — |
+| GET | `/auth/profile` | ✅ |
+| PATCH | `/auth/profile` | ✅ |
+| POST | `/detection` | ✅ |
+| GET | `/detection/history` | ✅ |
+| GET | `/detection/:id` | ✅ |
+| DELETE | `/detection/:id` | ✅ |
+| GET | `/doctors` | ✅ |
+| GET | `/doctors/:id` | ✅ |
+| POST | `/chat/rooms` | ✅ |
+| GET | `/chat/:roomId/messages` | ✅ |
+| GET | `/health` | — |
 
-Now that you have successfully run the app, let's make changes!
+Socket events: `joinRoom`, `leaveRoom`, `sendMessage` → `receiveMessage`
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+## Emulator Android
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+`10.0.2.2` = `localhost` mesin host dari dalam emulator.
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+```env
+API_BASE_URL=http://10.0.2.2:3000/api
+SOCKET_URL=http://10.0.2.2:3000
+```
 
-## Congratulations! :tada:
+## Dokumentasi
 
-You've successfully run and modified your React Native App. :partying_face:
+- [`docs/PLANNING.md`](docs/PLANNING.md) — roadmap, keputusan stack, risiko
+- [`services/api/README.md`](services/api/README.md) — detail backend
 
-### Now what?
+## Lisensi
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+Proyek akademik — Universitas (Semester 5, mata kuliah MCP & Deep Learning).
