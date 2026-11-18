@@ -1,0 +1,5 @@
+# Dependency ML (opsional) — tanpa ini backend tetap jalan di mode demo.
+# Install CPU-only (disarankan untuk VM Oracle Always Free):
+# pip install -r requirements-ml.txt --index-url https://download.pytorch.org/whl/cpu
+torch>=2.4
+torchvision>=0.19
