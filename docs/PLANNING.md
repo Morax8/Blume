@@ -142,16 +142,16 @@ Blume/
 
 ## Estimasi total
 
-| Fase | Estimasi |
-|---|---|
-| 1. Frontend sisa | ~2 jam |
-| 2. ML artefak | ✅ selesai |
-| 3. Backend | ~9 jam |
-| 4. Deploy Oracle | ~3 jam |
-| 5. Wiring | ~2 jam |
-| 6. Testing | ~3 jam |
-| **Total** | **~19 jam** (± 3–4 hari kerja) |
-| 7. Offline (opsional) | +~1 hari |
+| Fase | Estimasi | Status |
+|---|---|---|
+| 1. Frontend | ~2 jam | ✅ selesai (sisa 2 item opsional: audit Figma, JDK 24→17) |
+| 2. ML artefak | — | ✅ selesai |
+| 3. Backend | ~9 jam | ✅ selesai — 41 assert lolos, mode real 229 ms/gambar |
+| 4. Deploy Oracle | ~3 jam | ⬜ belum (dikerjakan sendiri oleh user) |
+| 5. Wiring | ~2 jam | 🟡 kode selesai, tinggal tes manual di emulator |
+| 6. Testing & dokumentasi | ~3 jam | ⬜ belum |
+| **Sisa total** | **~6–7 jam** | 2 fase wajib: Fase 4 + Fase 6 |
+| 7. Offline (opsional) | +~1 hari | ditunda |
 
 ## Catatan risiko
 
