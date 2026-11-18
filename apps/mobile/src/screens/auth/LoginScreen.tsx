@@ -16,12 +16,14 @@ import {
   Text,
   View,
 } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button } from '../../components/common/Button';
 import { Input } from '../../components/common/Input';
 import { authService } from '../../services/authService';
 import { useAuthStore } from '../../store/useAuthStore';
+import { pesanError } from '../../utils/apiError';
 import { BorderRadius, Colors, FontFamily, FontSize, Spacing } from '../../utils/constants';
 import type { AuthStackParamList } from '../../types/navigation';
 
@@ -59,9 +61,8 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
         password,
       });
       login(token, user);
-    } catch {
-      // TODO: tampilkan pesan error spesifik dari response backend.
-      Alert.alert('Login Gagal', 'Email atau password salah. Coba lagi.');
+    } catch (err) {
+      Alert.alert('Login Gagal', pesanError(err));
     } finally {
       setLoading(false);
     }
@@ -84,7 +85,10 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* Sheet putih berisi form, menumpuk latar hijau */}
         <View style={styles.sheet}>
-          <Text style={styles.title}>Selamat Datang 👋</Text>
+          <Text style={styles.title}>
+            Selamat Datang{' '}
+            <Ionicons name="hand-left-outline" size={30} color={Colors.text} />
+          </Text>
           <Text style={styles.subtitle}>Masuk untuk melanjutkan ke Blume</Text>
 
           <Input

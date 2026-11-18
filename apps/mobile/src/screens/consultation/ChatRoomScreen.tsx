@@ -1,8 +1,13 @@
 /**
- * Room chat konsultasi dengan dokter via Socket.io.
- * - Connect & joinRoom saat mount
- * - Kirim pesan dengan optimistic UI
- * - Cleanup listener saat unmount
+ * Room chat konsultasi dengan dokter.
+ *
+ * Alur yang benar (backend membuat room UUID sendiri):
+ *  1. POST /chat/rooms {doctorId} -> dapat roomId asli (UUID)
+ *  2. GET  /chat/{roomId}/messages -> riwayat pesan (sudah membawa isMine)
+ *  3. socket.connect() + joinRoom(roomId) + onMessage(handler)
+ *  4. kirim: socket.sendMessage({ roomId, content }) — pesan BALIK lewat
+ *     broadcast 'receiveMessage', jadi tidak di-append manual.
+ *  5. unmount: leaveRoom(roomId) + offMessage/offConnectError + disconnect
  *
  * @format
  */
@@ -22,8 +27,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MessageBubble } from '../../components/cards/MessageBubble';
+import { LoadingSpinner } from '../../components/common/LoadingSpinner';
+import { chatService } from '../../services/chatService';
 import { socketService } from '../../services/socketService';
 import { useAuthStore } from '../../store/useAuthStore';
+import { pesanError } from '../../utils/apiError';
 import { BorderRadius, Colors, FontFamily, FontSize, Spacing } from '../../utils/constants';
 import type { ChatMessage } from '../../types/user';
 import type { ConsultationStackParamList } from '../../types/navigation';
@@ -35,47 +43,86 @@ export const ChatRoomScreen: React.FC<Props> = ({ route, navigation }) => {
   const currentUser = useAuthStore((state) => state.user);
   const insets = useSafeAreaInsets();
 
+  const [roomId, setRoomId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [input, setInput] = useState('');
   const listRef = useRef<FlatList<ChatMessage>>(null);
 
   useEffect(() => {
-    socketService.connect(doctorId);
-    socketService.joinRoom(doctorId);
+    let cancelled = false;
+    // Simpan roomId hasil resolve untuk cleanup (leaveRoom) saat unmount.
+    let activeRoomId: string | null = null;
 
-    const handleMessage = (message: ChatMessage): void => {
-      setMessages((prev) => [
-        ...prev,
-        { ...message, isMine: message.senderId === currentUser?.id },
-      ]);
+    const setup = async (): Promise<void> => {
+      setLoading(true);
+      setError(null);
+      try {
+        // 1. Ambil roomId asli (UUID) dari backend — bukan doctorId.
+        const room = await chatService.getOrCreateRoom(doctorId);
+        if (cancelled) {
+          return;
+        }
+        activeRoomId = room.id;
+        setRoomId(room.id);
+
+        // 2. Muat riwayat pesan lama (sudah membawa isMine dari backend).
+        const history = await chatService.getMessages(room.id);
+        if (cancelled) {
+          return;
+        }
+        setMessages(history);
+
+        // 3. Buka socket, masuk room, pasang listener.
+        socketService.connect();
+        socketService.joinRoom(room.id);
+        socketService.onMessage((message: ChatMessage) => {
+          if (cancelled) {
+            return;
+          }
+          setMessages((prev) => [
+            ...prev,
+            { ...message, isMine: message.senderId === currentUser?.id },
+          ]);
+        });
+        socketService.onConnectError(() => {
+          if (cancelled) {
+            return;
+          }
+          setError('Koneksi chat gagal. Periksa koneksi lalu coba lagi.');
+        });
+      } catch (err) {
+        if (!cancelled) {
+          setError(pesanError(err));
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
     };
-    socketService.onMessage(handleMessage);
+
+    setup();
 
     return () => {
+      cancelled = true;
+      if (activeRoomId) {
+        socketService.leaveRoom(activeRoomId);
+      }
       socketService.offMessage();
-      socketService.leaveRoom(doctorId);
-      // TODO: pertahankan koneksi jika masih dibutuhkan screen lain.
+      socketService.offConnectError();
       socketService.disconnect();
     };
   }, [doctorId, currentUser?.id]);
 
   const handleSend = (): void => {
     const content = input.trim();
-    if (!content) {
+    if (!content || !roomId) {
       return;
     }
-    // Optimistic UI: tampilkan pesan lokal, status diperbarui dari server.
-    const optimistic: ChatMessage = {
-      id: `local-${Date.now()}`,
-      roomId: doctorId,
-      senderId: currentUser?.id ?? 'me',
-      content,
-      createdAt: new Date().toISOString(),
-      isMine: true,
-      status: 'sending',
-    };
-    setMessages((prev) => [...prev, optimistic]);
-    socketService.sendMessage({ roomId: doctorId, content });
+    // Pesan akan balik lewat broadcast 'receiveMessage' — jangan append manual.
+    socketService.sendMessage({ roomId, content });
     setInput('');
   };
 
@@ -83,35 +130,34 @@ export const ChatRoomScreen: React.FC<Props> = ({ route, navigation }) => {
     <MessageBubble message={item} isMine={item.isMine === true} />
   );
 
-  return (
-    <View style={styles.flex}>
-      {/* Judul + back di atas latar hijau */}
-      <Pressable
-        onPress={() => navigation.goBack()}
-        hitSlop={8}
-        style={styles.backButton}>
-        <Ionicons name="chevron-back" size={24} color={Colors.text} />
-      </Pressable>
-      <View style={styles.titleWrap}>
-        <Text style={styles.title} numberOfLines={1}>
-          {doctorName ?? 'Chat Dokter'}
-        </Text>
-      </View>
+  const renderBody = (): React.JSX.Element => {
+    if (loading) {
+      return (
+        <View style={styles.centerWrap}>
+          <LoadingSpinner />
+          <Text style={styles.centerText}>Membuka ruang chat…</Text>
+        </View>
+      );
+    }
 
-      {/* Sheet putih: pesan + input */}
-      <KeyboardAvoidingView
-        style={styles.sheet}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={insets.top + 48}>
+    if (error) {
+      return (
+        <View style={styles.centerWrap}>
+          <Ionicons name="alert-circle-outline" size={40} color={Colors.error} />
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      );
+    }
+
+    return (
+      <>
         <FlatList
           ref={listRef}
           data={messages}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
           contentContainerStyle={styles.listContent}
-          onContentSizeChange={() =>
-            listRef.current?.scrollToEnd({ animated: true })
-          }
+          onContentSizeChange={() => listRef.current?.scrollToEnd({ animated: true })}
           ListEmptyComponent={
             <View style={styles.emptyWrap}>
               <Ionicons
@@ -119,9 +165,7 @@ export const ChatRoomScreen: React.FC<Props> = ({ route, navigation }) => {
                 size={40}
                 color={Colors.textSecondary}
               />
-              <Text style={styles.emptyText}>
-                Mulai percakapan dengan dokter.
-              </Text>
+              <Text style={styles.emptyText}>Mulai percakapan dengan dokter.</Text>
             </View>
           }
         />
@@ -144,6 +188,31 @@ export const ChatRoomScreen: React.FC<Props> = ({ route, navigation }) => {
             <Ionicons name="send" size={18} color={Colors.textOnPrimary} />
           </Pressable>
         </View>
+      </>
+    );
+  };
+
+  return (
+    <View style={styles.flex}>
+      {/* Judul + back di atas latar hijau */}
+      <Pressable
+        onPress={() => navigation.goBack()}
+        hitSlop={8}
+        style={styles.backButton}>
+        <Ionicons name="chevron-back" size={24} color={Colors.text} />
+      </Pressable>
+      <View style={styles.titleWrap}>
+        <Text style={styles.title} numberOfLines={1}>
+          {doctorName ?? 'Chat Dokter'}
+        </Text>
+      </View>
+
+      {/* Sheet putih: loading / error / pesan + input */}
+      <KeyboardAvoidingView
+        style={styles.sheet}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={insets.top + 48}>
+        {renderBody()}
       </KeyboardAvoidingView>
     </View>
   );
@@ -200,6 +269,25 @@ const styles = StyleSheet.create({
     fontSize: FontSize.sm,
     fontFamily: FontFamily.regular,
     color: Colors.textSecondary,
+    marginTop: Spacing.md,
+  },
+  centerWrap: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: Spacing.lg,
+  },
+  centerText: {
+    fontSize: FontSize.sm,
+    fontFamily: FontFamily.regular,
+    color: Colors.textSecondary,
+    marginTop: Spacing.md,
+  },
+  errorText: {
+    fontSize: FontSize.sm,
+    fontFamily: FontFamily.regular,
+    color: Colors.error,
+    textAlign: 'center',
     marginTop: Spacing.md,
   },
   inputBar: {

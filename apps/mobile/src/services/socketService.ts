@@ -2,8 +2,12 @@
  * Client Socket.io untuk fitur chat konsultasi.
  * Singleton: satu koneksi per aplikasi, dipakai ulang antar screen.
  *
- * Nama event mengikuti konvensi umum backend (joinRoom, sendMessage,
- * receiveMessage). TODO: samakan dengan event yang dipakai backend.
+ * Nama event sesuai backend (services/api/app/sockets.py):
+ *   joinRoom, leaveRoom, sendMessage -> emit
+ *   receiveMessage, connect_error    -> listen
+ *
+ * Autentikasi: JWT dikirim lewat `auth: { token }` saat handshake. Backend
+ * tidak memakai query roomId, jadi tidak dikirim.
  *
  * @format
  */
@@ -14,22 +18,34 @@ import { useAuthStore } from '../store/useAuthStore';
 import type { ChatMessage } from '../types/user';
 
 let socket: Socket | null = null;
+/** Token yang dipakai saat socket terakhir dibuat, untuk deteksi pergantian sesi. */
+let lastToken: string | null = null;
 
 export const socketService = {
   /**
-   * Buka koneksi (atau kembalikan koneksi yang sudah aktif).
-   * Token JWT dikirim via auth agar backend bisa memverifikasi user.
+   * Buka koneksi (atau pakai ulang yang sudah ada).
+   * - Token sama -> kembalikan socket yang ada (connected / sedang connect).
+   * - Token beda (setelah logout/login) -> putuskan dulu, lalu buat koneksi baru
+   *   agar auth handshake memakai token terbaru.
    */
-  connect(roomId?: string): Socket {
-    if (socket?.connected) {
+  connect(): Socket {
+    const token = useAuthStore.getState().token;
+
+    if (socket && lastToken === token) {
       return socket;
     }
-    const token = useAuthStore.getState().token;
+
+    // Token berubah atau belum ada koneksi: mulai dari awal.
+    if (socket) {
+      socket.disconnect();
+      socket = null;
+    }
+
+    lastToken = token;
     socket = io(SOCKET_URL, {
       transports: ['websocket'],
       autoConnect: true,
       auth: { token },
-      ...(roomId ? { query: { roomId } } : {}),
     });
     return socket;
   },
@@ -37,6 +53,7 @@ export const socketService = {
   disconnect(): void {
     socket?.disconnect();
     socket = null;
+    lastToken = null;
   },
 
   getSocket(): Socket | null {
@@ -66,5 +83,18 @@ export const socketService = {
   /** Lepas listener pesan masuk (hindari double-listener). */
   offMessage(): void {
     socket?.off('receiveMessage');
+  },
+
+  /**
+   * Pasang listener kegagalan koneksi (connect_error) supaya UI bisa
+   * menampilkan "koneksi gagal" alih-alih diam saja.
+   */
+  onConnectError(handler: (error: Error) => void): void {
+    socket?.on('connect_error', handler);
+  },
+
+  /** Lepas listener kegagalan koneksi. */
+  offConnectError(): void {
+    socket?.off('connect_error');
   },
 };

@@ -4,7 +4,7 @@
  * @format
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   RefreshControl,
   ScrollView,
@@ -13,6 +13,7 @@ import {
   View,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useFocusEffect } from '@react-navigation/native';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
@@ -21,6 +22,7 @@ import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { DetectionHistoryCard } from '../../components/cards/DetectionHistoryCard';
 import { detectionService } from '../../services/detectionService';
 import { useAuthStore } from '../../store/useAuthStore';
+import { pesanError } from '../../utils/apiError';
 import { Colors, FontFamily, FontSize, Spacing, BorderRadius } from '../../utils/constants';
 import type { DetectionHistoryItem } from '../../types/detection';
 import type { HomeStackParamList, MainTabParamList } from '../../types/navigation';
@@ -47,20 +49,21 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
     try {
       const data = await detectionService.getHistory();
       setHistory(data);
-    } catch {
-      setError('Gagal memuat riwayat. Tarik ke bawah untuk coba lagi.');
+    } catch (err) {
+      setError(pesanError(err));
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
   }, []);
 
-  useEffect(() => {
-    fetchHistory();
-  }, [fetchHistory]);
-
-  // TODO: muat ulang otomatis saat layar fokus kembali dari ScanResult
-  // (pakai useFocusEffect dari @react-navigation/native).
+  // Muat ulang otomatis setiap layar fokus kembali (mis. balik dari ScanResult
+  // atau setelah hapus item di HistoryDetail) — riwayat tidak lagi basi.
+  useFocusEffect(
+    useCallback(() => {
+      fetchHistory();
+    }, [fetchHistory]),
+  );
 
   const handleRefresh = (): void => {
     setRefreshing(true);
@@ -79,7 +82,8 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
       {/* Sapaan user di atas latar hijau, di atas sheet */}
       <View style={styles.greetingRow}>
         <Text style={styles.greeting} numberOfLines={1}>
-          Halo, {user?.name ?? 'Sahabat Sehat'} 💙
+          Halo, {user?.name ?? 'Sahabat Sehat'}{' '}
+          <Ionicons name="heart" size={22} color={Colors.pink} />
         </Text>
         <View style={styles.logoBadge}>
           <Ionicons name="medkit-outline" size={24} color={Colors.primary} />

@@ -18,6 +18,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { DoctorCard } from '../../components/cards/DoctorCard';
 import { doctorService } from '../../services/doctorService';
+import { pesanError } from '../../utils/apiError';
 import { BorderRadius, Colors, FontFamily, FontSize, Spacing } from '../../utils/constants';
 import type { Doctor } from '../../types/user';
 import type { ConsultationStackParamList } from '../../types/navigation';
@@ -36,8 +37,8 @@ export const DoctorListScreen: React.FC<Props> = ({ navigation }) => {
     try {
       const data = await doctorService.getDoctors();
       setDoctors(data);
-    } catch {
-      setError('Gagal memuat daftar dokter.');
+    } catch (err) {
+      setError(pesanError(err));
     } finally {
       setLoading(false);
       setRefreshing(false);

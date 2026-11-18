@@ -7,6 +7,7 @@
 
 import React, { useEffect, useState } from 'react';
 import {
+  Alert,
   Image,
   Pressable,
   ScrollView,
@@ -15,17 +16,28 @@ import {
   View,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import type { CompositeScreenProps } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { Button } from '../../components/common/Button';
 import { Card } from '../../components/common/Card';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { detectionService } from '../../services/detectionService';
+import { doctorService } from '../../services/doctorService';
+import { pesanError } from '../../utils/apiError';
 import { Colors, FontFamily, FontSize, Spacing, BorderRadius } from '../../utils/constants';
 import { formatDate, formatConfidence } from '../../utils/formatters';
 import type { DetectionResult } from '../../types/detection';
-import type { HomeStackParamList } from '../../types/navigation';
+import type { HomeStackParamList, MainTabParamList } from '../../types/navigation';
 
-type Props = NativeStackScreenProps<HomeStackParamList, 'HistoryDetail'>;
+/**
+ * CompositeScreenProps: stack Home + tab utama, agar bisa navigate lintas-tab
+ * secara type-safe ke ConsultationTab (ChatRoom / DoctorList).
+ */
+type Props = CompositeScreenProps<
+  NativeStackScreenProps<HomeStackParamList, 'HistoryDetail'>,
+  BottomTabScreenProps<MainTabParamList>
+>;
 
 export const HistoryDetailScreen: React.FC<Props> = ({ route, navigation }) => {
   const { detectionId } = route.params;
@@ -33,6 +45,7 @@ export const HistoryDetailScreen: React.FC<Props> = ({ route, navigation }) => {
   const [detail, setDetail] = useState<DetectionResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [consultLoading, setConsultLoading] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -45,9 +58,9 @@ export const HistoryDetailScreen: React.FC<Props> = ({ route, navigation }) => {
         if (!cancelled) {
           setDetail(data);
         }
-      } catch {
+      } catch (err) {
         if (!cancelled) {
-          setError('Gagal memuat detail deteksi.');
+          setError(pesanError(err));
         }
       } finally {
         if (!cancelled) {
@@ -61,6 +74,28 @@ export const HistoryDetailScreen: React.FC<Props> = ({ route, navigation }) => {
       cancelled = true;
     };
   }, [detectionId]);
+
+  // Ambil dokter pertama lalu buka ChatRoom; kalau daftar kosong, buka
+  // DoctorList agar user bisa memilih sendiri.
+  const handleConsult = async (): Promise<void> => {
+    setConsultLoading(true);
+    try {
+      const doctors = await doctorService.getDoctors();
+      const first = doctors[0];
+      if (first) {
+        navigation.navigate('ConsultationTab', {
+          screen: 'ChatRoom',
+          params: { doctorId: first.id, doctorName: first.name },
+        });
+      } else {
+        navigation.navigate('ConsultationTab', { screen: 'DoctorList' });
+      }
+    } catch (err) {
+      Alert.alert('Konsultasi', pesanError(err));
+    } finally {
+      setConsultLoading(false);
+    }
+  };
 
   // Shell design system: layar hijau + judul/back + sheet putih.
   const renderShell = (content: React.ReactNode): React.JSX.Element => (
@@ -142,7 +177,13 @@ export const HistoryDetailScreen: React.FC<Props> = ({ route, navigation }) => {
         </Card>
       ) : null}
 
-      {/* TODO: tombol "Konsultasi ke Dokter" -> navigate ke ConsultationTab */}
+      {/* Aksi lanjutan: konsultasikan hasil deteksi ini ke dokter. */}
+      <Button
+        title="Konsultasi ke Dokter"
+        onPress={handleConsult}
+        loading={consultLoading}
+        style={styles.consultButton}
+      />
     </ScrollView>,
   );
 };
@@ -250,6 +291,9 @@ const styles = StyleSheet.create({
     color: Colors.textLink,
     marginRight: Spacing.sm,
     lineHeight: 22,
+  },
+  consultButton: {
+    marginTop: Spacing.sm,
   },
   errorWrap: {
     flex: 1,

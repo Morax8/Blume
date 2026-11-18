@@ -21,6 +21,7 @@ import { Button } from '../../components/common/Button';
 import { Input } from '../../components/common/Input';
 import { authService } from '../../services/authService';
 import { useAuthStore } from '../../store/useAuthStore';
+import { pesanError } from '../../utils/apiError';
 import {
   BorderRadius,
   Colors,
@@ -82,9 +83,8 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       }
       // Registrasi sukses -> langsung masuk aplikasi.
       login(token, user);
-    } catch {
-      // TODO: tangani error email sudah terdaftar dari response backend.
-      Alert.alert('Registrasi Gagal', 'Coba periksa kembali data kamu.');
+    } catch (err) {
+      Alert.alert('Registrasi Gagal', pesanError(err));
     } finally {
       setLoading(false);
     }

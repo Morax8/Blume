@@ -7,6 +7,15 @@
 /** Status pemrosesan deteksi. */
 export type DetectionStatus = 'pending' | 'completed' | 'failed';
 
+/** Mode model ML yang menghasilkan prediksi. */
+export type ModelMode = 'demo' | 'real';
+
+/** Satu kandidat prediksi (penyakit + keyakinan). */
+export interface Prediction {
+  diseaseName: string;
+  confidence: number;
+}
+
 /** Hasil lengkap satu kali deteksi. */
 export interface DetectionResult {
   id: string;
@@ -21,6 +30,12 @@ export interface DetectionResult {
   status?: DetectionStatus;
   /** ISO timestamp. */
   createdAt: string;
+  /** Mode model: 'demo' = hasil bukan prediksi asli, 'real' = model ML sungguhan. */
+  modelMode?: ModelMode;
+  /** Tingkat keparahan dari backend (mis. 'ringan' | 'sedang' | 'berat'). */
+  severity?: string;
+  /** Kandidat prediksi teratas (opsional; bisa kosong). */
+  topPredictions?: Prediction[];
 }
 
 /** Item ringkas untuk list riwayat (Home / history). */

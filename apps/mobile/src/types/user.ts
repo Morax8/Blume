@@ -51,6 +51,19 @@ export interface AuthResponse {
 /** Status pesan chat. */
 export type MessageStatus = 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
 
+/**
+ * Room chat konsultasi, dibuat lewat POST /api/chat/rooms {doctorId}.
+ * `id` adalah UUID room yang dipakai untuk joinRoom & GET messages —
+ * BUKAN doctorId.
+ */
+export interface ChatRoom {
+  id: string;
+  userId: string;
+  doctorId: string;
+  /** ISO timestamp. */
+  createdAt: string;
+}
+
 /** Satu pesan dalam room chat konsultasi. */
 export interface ChatMessage {
   id: string;

@@ -22,10 +22,29 @@ import { Button } from '../../components/common/Button';
 import { Card } from '../../components/common/Card';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { detectionService } from '../../services/detectionService';
+import { pesanError } from '../../utils/apiError';
 import { BorderRadius, Colors, FontFamily, FontSize, Spacing } from '../../utils/constants';
 import { formatConfidence } from '../../utils/formatters';
 import type { DetectionResult } from '../../types/detection';
 import type { MainTabParamList, ScanStackParamList } from '../../types/navigation';
+
+/**
+ * Pemetaan severity -> warna badge (pakai token design system).
+ * Nilai backend: 'ringan' | 'sedang' | 'berat'. Default: sedang.
+ */
+const SEVERITY_COLORS: Record<string, { bg: string; text: string }> = {
+  ringan: { bg: Colors.severityMildBg, text: Colors.severityMildText },
+  sedang: { bg: Colors.severityModerateBg, text: Colors.severityModerateText },
+  berat: { bg: Colors.severitySevereBg, text: Colors.severitySevereText },
+};
+
+function severityColors(severity: string): { bg: string; text: string } {
+  return SEVERITY_COLORS[severity.toLowerCase()] ?? SEVERITY_COLORS.sedang;
+}
+
+function titleCase(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
 
 /**
  * CompositeScreenProps: stack Scan + tab utama, agar bisa navigate
@@ -49,8 +68,8 @@ export const ScanResultScreen: React.FC<Props> = ({ route, navigation }) => {
     try {
       const data = await detectionService.uploadPhoto(imageUri);
       setResult(data);
-    } catch {
-      setError('Gagal menganalisis foto. Periksa koneksi lalu coba lagi.');
+    } catch (err) {
+      setError(pesanError(err));
     } finally {
       setUploading(false);
     }
@@ -113,9 +132,41 @@ export const ScanResultScreen: React.FC<Props> = ({ route, navigation }) => {
     <ScrollView style={styles.scroll} contentContainerStyle={styles.container}>
       <Image source={{ uri: imageUri }} style={styles.image} />
 
+      {/* Chip kecil peringatan bila hasil berasal dari model demo. */}
+      {result.modelMode === 'demo' ? (
+        <View style={styles.demoChip}>
+          <Ionicons
+            name="information-circle-outline"
+            size={14}
+            color={Colors.text}
+          />
+          <Text style={styles.demoChipText}>
+            Mode demo — hasil bukan prediksi asli
+          </Text>
+        </View>
+      ) : null}
+
       <Card style={styles.resultCard}>
         <View style={styles.resultHeader}>
-          <Text style={styles.diseaseName}>{result.diseaseName}</Text>
+          <View style={styles.resultTitleCol}>
+            <Text style={styles.diseaseName}>{result.diseaseName}</Text>
+            {/* Badge tingkat keparahan (hanya bila backend mengirim severity). */}
+            {result.severity ? (
+              <View
+                style={[
+                  styles.severityBadge,
+                  { backgroundColor: severityColors(result.severity).bg },
+                ]}>
+                <Text
+                  style={[
+                    styles.severityBadgeText,
+                    { color: severityColors(result.severity).text },
+                  ]}>
+                  {titleCase(result.severity)}
+                </Text>
+              </View>
+            ) : null}
+          </View>
           <View style={styles.confidenceRing}>
             <Text style={styles.confidenceRingText}>
               {result.isHealthy ? 'Sehat' : formatConfidence(result.confidence)}
@@ -134,6 +185,21 @@ export const ScanResultScreen: React.FC<Props> = ({ route, navigation }) => {
               <View key={index} style={styles.recommendationRow}>
                 <Text style={styles.bullet}>{'•'}</Text>
                 <Text style={styles.bodyText}>{rec}</Text>
+              </View>
+            ))}
+          </View>
+        ) : null}
+
+        {/* Prediksi teratas — hanya tampil bila ada isinya. */}
+        {result.topPredictions && result.topPredictions.length > 0 ? (
+          <View style={styles.predictions}>
+            <Text style={styles.sectionTitle}>Prediksi Teratas</Text>
+            {result.topPredictions.map((pred, index) => (
+              <View key={index} style={styles.predictionRow}>
+                <Text style={styles.bodyText}>{pred.diseaseName}</Text>
+                <Text style={styles.predictionConf}>
+                  {formatConfidence(pred.confidence)}
+                </Text>
               </View>
             ))}
           </View>
@@ -218,12 +284,25 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: Spacing.sm,
   },
-  diseaseName: {
+  resultTitleCol: {
     flex: 1,
+    marginRight: Spacing.sm,
+  },
+  diseaseName: {
     fontSize: FontSize.xl,
     fontFamily: FontFamily.extraBold,
     color: Colors.text,
-    marginRight: Spacing.sm,
+  },
+  severityBadge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: BorderRadius.pill,
+    marginTop: 6,
+  },
+  severityBadgeText: {
+    fontSize: 11,
+    fontFamily: FontFamily.medium,
   },
   confidenceRing: {
     width: 70,
@@ -247,6 +326,37 @@ const styles = StyleSheet.create({
   },
   recommendations: {
     marginTop: Spacing.md,
+  },
+  demoChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: 6,
+    backgroundColor: Colors.statusCard,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: BorderRadius.pill,
+    marginBottom: Spacing.sm,
+  },
+  demoChipText: {
+    fontSize: 11,
+    fontFamily: FontFamily.medium,
+    color: Colors.text,
+  },
+  predictions: {
+    marginTop: Spacing.md,
+  },
+  predictionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
+  predictionConf: {
+    fontSize: FontSize.sm,
+    fontFamily: FontFamily.medium,
+    color: Colors.textLink,
+    marginLeft: Spacing.sm,
   },
   sectionTitle: {
     fontSize: FontSize.md,
