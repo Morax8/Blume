@@ -10,11 +10,25 @@ cukup dipakai saat development.
 import os
 from pathlib import Path
 
+# Muat .env kalau ada (python-dotenv opsional; kalau tidak ada, pakai env biasa)
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+except ImportError:  # pragma: no cover
+    pass
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 def _env(key: str, default: str) -> str:
     return os.environ.get(key, default)
+
+
+def _path(value: str) -> Path:
+    """Path relatif di .env dihitung dari folder services/api/, bukan dari CWD."""
+    p = Path(value)
+    return p if p.is_absolute() else (BASE_DIR / p).resolve()
 
 
 class Settings:
@@ -38,12 +52,12 @@ class Settings:
     JWT_EXPIRE_DAYS = int(_env("JWT_EXPIRE_DAYS", "30"))
 
     # ── Upload ──
-    UPLOAD_DIR = Path(_env("UPLOAD_DIR", str(BASE_DIR / "uploads")))
+    UPLOAD_DIR = _path(_env("UPLOAD_DIR", str(BASE_DIR / "uploads")))
     MAX_UPLOAD_MB = int(_env("MAX_UPLOAD_MB", "10"))
 
     # ── Model ML ──
-    MODEL_PATH = Path(_env("MODEL_PATH", str(BASE_DIR / "models" / "best_skindex_v5_320.pt")))
-    ARTIFACTS_DIR = Path(_env("ARTIFACTS_DIR", str(BASE_DIR / "app" / "ml" / "artifacts")))
+    MODEL_PATH = _path(_env("MODEL_PATH", str(BASE_DIR / "models" / "best_skindex_v5_320.pt")))
+    ARTIFACTS_DIR = _path(_env("ARTIFACTS_DIR", str(BASE_DIR / "app" / "ml" / "artifacts")))
     # Load model saat startup (lebih lambat start, tapi request pertama cepat)
     WARM_MODEL = _env("WARM_MODEL", "0") == "1"
 
