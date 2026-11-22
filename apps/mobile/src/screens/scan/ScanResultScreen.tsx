@@ -219,6 +219,23 @@ export const ScanResultScreen: React.FC<Props> = ({ route, navigation }) => {
           style={styles.actionButton}
         />
       </View>
+
+      {/* Disclaimer AI — hasil bukan diagnosis medis. */}
+      <View style={styles.disclaimerCard}>
+        <View style={styles.disclaimerHeader}>
+          <Ionicons
+            name="information-circle-outline"
+            size={18}
+            color={Colors.textSecondary}
+          />
+          <Text style={styles.disclaimerTitle}>Bukan diagnosis medis</Text>
+        </View>
+        <Text style={styles.disclaimerBody}>
+          Hasil ini dihasilkan oleh model AI dan hanya untuk skrining awal.
+          Konsultasikan kondisi kulitmu ke dokter spesialis untuk kepastian
+          diagnosis.
+        </Text>
+      </View>
     </ScrollView>,
   );
 };
@@ -408,5 +425,28 @@ const styles = StyleSheet.create({
   },
   errorActions: {
     width: '100%',
+  },
+  disclaimerCard: {
+    backgroundColor: Colors.surfaceMuted,
+    borderRadius: BorderRadius.md,
+    padding: 16,
+    marginTop: Spacing.sm,
+  },
+  disclaimerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: Spacing.sm,
+  },
+  disclaimerTitle: {
+    fontSize: FontSize.sm,
+    fontFamily: FontFamily.semiBold,
+    color: Colors.text,
+  },
+  disclaimerBody: {
+    fontSize: FontSize.xs,
+    fontFamily: FontFamily.regular,
+    color: Colors.textSecondary,
+    lineHeight: 20,
   },
 });

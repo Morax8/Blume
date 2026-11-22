@@ -38,6 +38,7 @@ interface FormErrors {
   name?: string;
   email?: string;
   password?: string;
+  confirmPassword?: string;
 }
 
 export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
@@ -47,6 +48,7 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
 
@@ -60,6 +62,9 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
     }
     if (password.length < 6) {
       next.password = 'Password minimal 6 karakter';
+    }
+    if (password !== confirmPassword) {
+      next.confirmPassword = 'Password tidak sama';
     }
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -137,6 +142,14 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
             value={password}
             error={errors.password}
             onChangeText={setPassword}
+          />
+          <Input
+            label="Ulangi Password"
+            placeholder="Ketik ulang password"
+            secureTextEntry
+            value={confirmPassword}
+            error={errors.confirmPassword}
+            onChangeText={setConfirmPassword}
           />
 
           <Button

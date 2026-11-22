@@ -4,12 +4,15 @@
  * @format
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
+  BackHandler,
+  Platform,
   RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
+  ToastAndroid,
   View,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -44,6 +47,40 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Back hardware 2x baru keluar app (hanya Android; HomeScreen = root tab).
+  const exitReady = useRef(false);
+  useFocusEffect(
+    useCallback(() => {
+      if (Platform.OS !== 'android') {
+        return;
+      }
+      let resetTimer: ReturnType<typeof setTimeout> | undefined;
+      const subscription = BackHandler.addEventListener(
+        'hardwareBackPress',
+        () => {
+          if (exitReady.current) {
+            // Tekanan kedua dalam 2 detik -> biarkan sistem menutup app.
+            return false;
+          }
+          exitReady.current = true;
+          ToastAndroid.show('Tekan sekali lagi untuk keluar', ToastAndroid.SHORT);
+          resetTimer = setTimeout(() => {
+            exitReady.current = false;
+          }, 2000);
+          // Tekanan pertama -> tahan, jangan keluar.
+          return true;
+        },
+      );
+      return () => {
+        subscription.remove();
+        if (resetTimer) {
+          clearTimeout(resetTimer);
+        }
+        exitReady.current = false;
+      };
+    }, []),
+  );
+
   const fetchHistory = useCallback(async (): Promise<void> => {
     setError(null);
     try {
@@ -72,6 +109,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
   const renderItem = ({ item }: { item: DetectionHistoryItem }): React.JSX.Element => (
     <DetectionHistoryCard
+      key={item.id}
       item={item}
       onPress={() => navigation.navigate('HistoryDetail', { detectionId: item.id })}
     />

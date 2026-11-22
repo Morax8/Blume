@@ -63,3 +63,6 @@ desktop.ini
 
 # ── Tooling ──
 graphify-out/
+
+# folder kerja sementara (script adb, screenshot)
+.tmp/

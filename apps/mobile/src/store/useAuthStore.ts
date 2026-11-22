@@ -1,5 +1,5 @@
 /**
- * Global auth state (Zustand) dengan persist ke AsyncStorage.
+ * Global auth state (Zustand) dengan persist ke Keychain (terenkripsi).
  * Menyimpan token JWT, data user, dan status login.
  *
  * @format
@@ -7,7 +7,7 @@
 
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { secureStorage } from './secureStorage';
 import type { User } from '../types/user';
 
 interface AuthState {
@@ -46,7 +46,7 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'blume-auth-storage',
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => secureStorage),
       // Hanya state yang perlu bertahan antar sesi yang di-persist.
       partialize: (state) => ({
         token: state.token,
